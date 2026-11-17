@@ -1,0 +1,30 @@
+/* ==========================================================================
+   SDRSM — Auth screens (Login / Register)
+   --------------------------------------------------------------------------
+   TODO (giai đoạn sau):
+   - Trang login.html và register.html chưa được triển khai theo yêu cầu.
+   - Khi làm, tái sử dụng design token trong style.css, không hardcode màu.
+   - Chỉ xử lý tương tác phía client (validate, hiện/ẩn mật khẩu, thông báo lỗi).
+   - Không gọi API, không xử lý authentication thật ở giai đoạn frontend demo.
+   ========================================================================== */
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+}
+
+.auth-card {
+  width: min(440px, 100%);
+  padding: 28px;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-card__head { text-align: center; margin-bottom: 22px; }
+.auth-card__head h1 { font-size: 1.3rem; margin-top: 12px; }
+.auth-card__head p { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+.auth-card__foot { text-align: center; font-size: 0.82rem; color: var(--muted); margin-top: 18px; }

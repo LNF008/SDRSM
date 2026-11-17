@@ -1,0 +1,5 @@
+﻿# SDRSM backend dependencies (not installed yet).
+Flask>=3.0,<4.0
+python-dotenv>=1.0
+# Added when database work starts:
+# mysql-connector-python>=9.0
