@@ -13,11 +13,19 @@ Configuration is environment driven:
 from __future__ import annotations
 
 import os
+import tempfile
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 INSTANCE_DIR = BASE_DIR / "instance"
-DEFAULT_SQLITE_PATH = INSTANCE_DIR / "sdrsm.db"
+
+# Vercel Functions have a read-only filesystem except for the temp directory,
+# so the zero-configuration SQLite fallback must live there. Set DATABASE_URL
+# to a managed MySQL database for persistence across invocations.
+ON_VERCEL = bool(os.getenv("VERCEL"))
+DEFAULT_SQLITE_PATH = (
+    Path(tempfile.gettempdir()) / "sdrsm.db" if ON_VERCEL else INSTANCE_DIR / "sdrsm.db"
+)
 
 try:  # python-dotenv is a hard dependency, but keep the app importable without it.
     from dotenv import load_dotenv

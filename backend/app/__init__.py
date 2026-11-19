@@ -106,7 +106,12 @@ def create_app(config_name: str | None = None, overrides: dict | None = None) ->
         app.config.update(overrides)
 
     # Ensure the Flask instance folder exists (SQLite default lives there).
-    os.makedirs(app.instance_path, exist_ok=True)
+    # Serverless platforms such as Vercel mount the bundle read-only; the
+    # SQLite fallback is redirected to /tmp in that case.
+    try:
+        os.makedirs(app.instance_path, exist_ok=True)
+    except OSError:
+        pass
 
     app.json.ensure_ascii = False
     app.json.sort_keys = False
