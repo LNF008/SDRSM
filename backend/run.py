@@ -24,6 +24,18 @@ from app import create_app  # noqa: E402  (path setup must run first)
 
 app = create_app()
 
+from flask import send_from_directory
+
+FRONTEND_DIR = BACKEND_DIR.parent / "frontend"
+
+@app.route("/")
+def serve_index():
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
+@app.route("/<path:filename>")
+def serve_static(filename):
+    return send_from_directory(FRONTEND_DIR, filename)
+
 
 if __name__ == "__main__":
     app.run(
