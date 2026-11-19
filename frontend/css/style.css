@@ -1262,7 +1262,7 @@ dialog.modal[open] { display: block; animation: modalIn 0.22s cubic-bezier(0.2, 
 .hero__meta-item strong { font-size: 1.3rem; letter-spacing: -0.02em; }
 .hero__meta-item span { font-size: 0.75rem; color: var(--muted); }
 
-.hero__visual { position: relative; z-index: 1; }
+.hero__visual { position: relative; z-index: 1; isolation: isolate; }
 .hero__panel {
   position: relative;
   border-radius: 22px;
@@ -1281,7 +1281,7 @@ dialog.modal[open] { display: block; animation: modalIn 0.22s cubic-bezier(0.2, 
 .hero__score-center {
   position: absolute;
   inset: 0;
-  display: grid;
+  display:grid;
   place-items: center;
   text-align: center;
   line-height: 1.1;
@@ -1304,10 +1304,12 @@ dialog.modal[open] { display: block; animation: modalIn 0.22s cubic-bezier(0.2, 
   box-shadow: var(--shadow-md);
   font-size: 0.75rem;
   font-weight: 600;
+  z-index: 5;
+  pointer-events: none;
 }
-.hero__float i { font-size: 1rem; }
-.hero__float--a { top: -18px; right: 12px; color: var(--low); }
-.hero__float--b { bottom: -16px; left: -12px; color: var(--brand-600); }
+.hero__float i { font-size: 1rem;}
+.hero__float--a { top: -32px; right: 16px; color: var(--low); }
+.hero__float--b { bottom: -32px; left: 16px; color: var(--brand-600); }
 
 .landing__section { max-width: 1200px; margin: 0 auto; padding: 64px 24px; }
 .section-head { max-width: 660px; margin-bottom: 34px; }
