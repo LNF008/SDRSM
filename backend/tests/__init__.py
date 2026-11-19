@@ -1,1 +1,1 @@
-﻿"""Backend tests package placeholder. No tests are implemented yet."""
+﻿"""Backend test suite (pytest)."""

@@ -1,5 +1,10 @@
-﻿# SDRSM backend dependencies (not installed yet).
+﻿# SDRSM backend dependencies
 Flask>=3.0,<4.0
+Flask-SQLAlchemy>=3.1,<4.0
+SQLAlchemy>=2.0.36
+PyJWT>=2.8,<3.0
 python-dotenv>=1.0
-# Added when database work starts:
-# mysql-connector-python>=9.0
+PyMySQL>=1.1
+
+# Development / tests
+pytest>=8.0
