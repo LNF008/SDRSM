@@ -469,7 +469,7 @@ window.SDRSM = window.SDRSM || {};
             callback: handleGoogleCredential,
             auto_select: false,
             cancel_on_tap_outside: true,
-            ux_mode: "redirect",
+            ux_mode: "popup",
             use_fedcm_for_prompt: true,
           });
           googleReady = true;
