@@ -53,73 +53,6 @@ window.SDRSM = window.SDRSM || {};
     };
   }
 
-  /* HTML tooltip for doughnut charts -------------------------------------
-     The canvas tooltip is painted *under* the HTML score text that is overlaid in the
-     middle of the ring (position: absolute), so the two overlapped. This tooltip is a
-     normal element on <body>: it always sits above the page, is not clipped by the
-     (small) canvas, and is placed above the ring so it never covers the centre text. */
-  const TIP_ID = "sdrsmChartTip";
-  let tipScrollBound = false;
-
-  function chartTip() {
-    let el = document.getElementById(TIP_ID);
-    if (!el) {
-      el = document.createElement("div");
-      el.id = TIP_ID;
-      el.className = "chart-tip";
-      el.setAttribute("role", "tooltip");
-      document.body.appendChild(el);
-    }
-    if (!tipScrollBound) {
-      tipScrollBound = true;
-      window.addEventListener("scroll", () => el.classList.remove("is-visible"), { passive: true });
-    }
-    return el;
-  }
-
-  function externalTooltip(context) {
-    const { chart, tooltip } = context;
-    const el = chartTip();
-
-    if (!tooltip || tooltip.opacity === 0 || !tooltip.dataPoints || !tooltip.dataPoints.length) {
-      el.classList.remove("is-visible");
-      return;
-    }
-
-    const title = (tooltip.title || []).join(" ").trim();
-    const lines = [];
-    (tooltip.body || []).forEach((item) => (item.lines || []).forEach((line) => lines.push(String(line).trim())));
-    const swatch = tooltip.labelColors && tooltip.labelColors[0] ? tooltip.labelColors[0].backgroundColor : "";
-
-    el.textContent = "";
-    if (title) {
-      const heading = document.createElement("strong");
-      heading.textContent = title;
-      el.appendChild(heading);
-    }
-    lines.forEach((line) => {
-      const row = document.createElement("span");
-      const dot = document.createElement("i");
-      if (swatch) dot.style.background = swatch;
-      row.appendChild(dot);
-      row.appendChild(document.createTextNode(line));
-      el.appendChild(row);
-    });
-
-    // Centre horizontally on the chart, sit above it (or below when there is no room).
-    const rect = chart.canvas.getBoundingClientRect();
-    const width = el.offsetWidth;
-    const height = el.offsetHeight;
-    const gap = 8;
-    let left = rect.left + rect.width / 2 - width / 2;
-    left = Math.max(gap, Math.min(left, window.innerWidth - width - gap));
-    let top = rect.top - height - gap;
-    if (top < gap) top = rect.bottom + gap;
-    el.style.left = `${Math.round(left)}px`;
-    el.style.top = `${Math.round(top)}px`;
-    el.classList.add("is-visible");
-  }
-
   function baseOptions(t) {
     return {
       responsive: true,
@@ -187,8 +120,6 @@ window.SDRSM = window.SDRSM || {};
           plugins: {
             legend: { display: false },
             tooltip: Object.assign(tooltipStyle(t), {
-              enabled: false,
-              external: externalTooltip,
               callbacks: {
                 label: (context) =>
                   context.dataIndex === 0

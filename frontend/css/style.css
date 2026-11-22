@@ -1106,30 +1106,6 @@ dialog.modal {
   box-shadow: var(--shadow-lg);
 }
 dialog.modal::backdrop { background: rgba(6, 11, 22, 0.6); backdrop-filter: blur(3px); }
-/* Chart tooltip (HTML, doughnut charts) — see externalTooltip() in js/charts.js */
-.chart-tip {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1300;
-  max-width: 240px;
-  padding: 8px 11px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: var(--surface);
-  color: var(--text-2);
-  box-shadow: var(--shadow-lg);
-  font-size: 0.72rem;
-  line-height: 1.35;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.12s ease;
-}
-.chart-tip.is-visible { opacity: 1; }
-.chart-tip strong { display: block; margin-bottom: 3px; color: var(--text); font-size: 0.72rem; font-weight: 600; }
-.chart-tip span { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.chart-tip i { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
-
 /* Bootstrap có `.modal { display: none }` — cần bật lại khi dialog mở. */
 dialog.modal[open] { display: block; animation: modalIn 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
 @keyframes modalIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
@@ -1326,6 +1302,14 @@ dialog.modal[open] { display: block; animation: modalIn 0.22s cubic-bezier(0.2, 
 .hero__score-center strong { font-size: 1.7rem; display: block; line-height: 1; letter-spacing: -0.03em; }
 /* letter-spacing leaves trailing space after the last letter; padding-left balances it. */
 .hero__score-center span { font-size: 0.66rem; line-height: 1; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; padding-left: 0.1em; }
+/* Doughnut tooltips are drawn on the canvas. The score text in the middle of the ring is an
+   HTML overlay, which by default paints ABOVE the canvas and therefore on top of the tooltip.
+   Lift the (transparent) canvas above the overlay so the tooltip covers the text instead. */
+.hero__score-ring canvas,
+.report-hero__ring canvas,
+.chart-box--doughnut canvas { position: relative; z-index: 1; }
+.hero__score-center,
+.chart-center { z-index: 0; }
 .hero__pillars { display: flex; flex-direction: column; gap: 10px; }
 .hero__pillar { display: flex; flex-direction: column; gap: 4px; }
 .hero__pillar-top { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-2); }
