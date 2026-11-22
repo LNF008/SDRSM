@@ -114,25 +114,58 @@
 
     /* Edit profile -------------------------------------------------------- */
     const editButton = document.getElementById("editProfileBtn");
+    const inlineEditButton = document.getElementById("editProfileInlineBtn");
+    const cancelEditButton = document.getElementById("cancelEditBtn");
+    const goEditButton = document.getElementById("goEditProfileBtn");
+    const editHint = document.getElementById("editHint");
     const editableInputs = ["inputFullName", "inputEmail", "inputStudentId", "inputFaculty", "inputYear"].map((id) =>
       document.getElementById(id)
     );
     let editing = false;
     let saving = false;
 
-    editButton.addEventListener("click", async () => {
-      if (saving) return;
+    function fillInputsFromProfile() {
+      document.getElementById("inputFullName").value = profile.name;
+      document.getElementById("inputEmail").value = profile.email;
+      document.getElementById("inputStudentId").value = profile.studentId;
+      document.getElementById("inputFaculty").value = profile.faculty;
+      document.getElementById("inputYear").value = profile.year;
+    }
 
-      if (!editing) {
-        editing = true;
-        editableInputs.forEach((input) => {
-          input.disabled = false;
-        });
-        editButton.innerHTML = '<i class="bi bi-save" aria-hidden="true"></i> Lưu thay đổi';
-        document.getElementById("inputFullName").focus();
-        return;
+    function setEditing(on) {
+      editing = on;
+      editableInputs.forEach((input) => {
+        input.disabled = !on;
+      });
+      editButton.innerHTML = on
+        ? '<i class="bi bi-save" aria-hidden="true"></i> Lưu thay đổi'
+        : '<i class="bi bi-pencil" aria-hidden="true"></i> Chỉnh sửa hồ sơ';
+      if (inlineEditButton) {
+        inlineEditButton.innerHTML = on
+          ? '<i class="bi bi-save" aria-hidden="true"></i> Lưu thay đổi'
+          : '<i class="bi bi-pencil" aria-hidden="true"></i> Chỉnh sửa';
       }
+      if (cancelEditButton) cancelEditButton.style.display = on ? "" : "none";
+      if (editHint) {
+        editHint.innerHTML = on
+          ? '<i class="bi bi-pencil-square" aria-hidden="true"></i> Đang chỉnh sửa. Bấm “Lưu thay đổi” để lưu hoặc “Huỷ” để bỏ qua.'
+          : '<i class="bi bi-info-circle" aria-hidden="true"></i> Các ô bên dưới đang ở chế độ chỉ xem. Bấm “Chỉnh sửa” để thay đổi họ tên, email, MSSV, khoa và năm học.';
+      }
+    }
 
+    function startEditing() {
+      activateTab("profile", true);
+      setEditing(true);
+      document.getElementById("inputFullName").focus();
+    }
+
+    function cancelEditing() {
+      if (saving) return;
+      fillInputsFromProfile();
+      setEditing(false);
+    }
+
+    async function saveProfile() {
       const payload = {
         fullName: document.getElementById("inputFullName").value.trim(),
         email: document.getElementById("inputEmail").value.trim(),
@@ -151,7 +184,9 @@
       }
 
       saving = true;
-      editButton.disabled = true;
+      [editButton, inlineEditButton, cancelEditButton].forEach((button) => {
+        if (button) button.disabled = true;
+      });
       try {
         const updated = await ns.api.patch("/api/users/me", payload);
         Object.assign(user, updated);
@@ -170,12 +205,9 @@
         document.getElementById("profileStudentId").textContent = profile.studentId || "Chưa cập nhật";
         document.getElementById("profileFaculty").textContent = profile.faculty || "Chưa cập nhật";
         document.getElementById("profileYear").textContent = profile.year || "Chưa cập nhật";
+        fillInputsFromProfile();
 
-        editing = false;
-        editableInputs.forEach((input) => {
-          input.disabled = true;
-        });
-        editButton.innerHTML = '<i class="bi bi-pencil" aria-hidden="true"></i> Chỉnh sửa hồ sơ';
+        setEditing(false);
         ns.ui.toast({ title: "Đã lưu hồ sơ", message: "Thông tin tài khoản đã được cập nhật.", type: "success" });
       } catch (error) {
         ns.ui.toast({
@@ -185,9 +217,25 @@
         });
       } finally {
         saving = false;
-        editButton.disabled = false;
+        [editButton, inlineEditButton, cancelEditButton].forEach((button) => {
+          if (button) button.disabled = false;
+        });
       }
-    });
+    }
+
+    async function onEditClick() {
+      if (saving) return;
+      if (!editing) {
+        startEditing();
+        return;
+      }
+      await saveProfile();
+    }
+
+    editButton.addEventListener("click", onEditClick);
+    if (inlineEditButton) inlineEditButton.addEventListener("click", onEditClick);
+    if (cancelEditButton) cancelEditButton.addEventListener("click", cancelEditing);
+    if (goEditButton) goEditButton.addEventListener("click", startEditing);
 
     /* Change password ----------------------------------------------------- */
     document.getElementById("changePasswordBtn").addEventListener("click", async () => {
