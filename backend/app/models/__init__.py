@@ -13,6 +13,7 @@ from app.models.assessment import (
 )
 from app.models.category import Category
 from app.models.indicator import Indicator
+from app.models.oauth_account import OAuthAccount
 from app.models.question import Question
 from app.models.recommendation import Recommendation, UserRecommendation
 from app.models.user import User
@@ -25,6 +26,7 @@ __all__ = [
     "AssessmentPillarScore",
     "Category",
     "Indicator",
+    "OAuthAccount",
     "Question",
     "Recommendation",
     "User",

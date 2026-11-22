@@ -67,6 +67,9 @@ class BaseConfig:
     JWT_ALGORITHM = "HS256"
     JWT_EXPIRES_MINUTES = _env_int("JWT_EXPIRES_MINUTES", 60 * 24)
 
+    # Google Identity Services Web client ID (public; no client secret needed).
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "").strip()
+
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
 
     AUTO_CREATE_TABLES = _env_bool("AUTO_CREATE_TABLES", True)
@@ -92,6 +95,7 @@ class TestingConfig(BaseConfig):
     SQLALCHEMY_ENGINE_OPTIONS = {}
     AUTO_CREATE_TABLES = True
     JWT_EXPIRES_MINUTES = 60
+    GOOGLE_CLIENT_ID = "test-client-id.apps.googleusercontent.com"
 
 
 class ProductionConfig(BaseConfig):

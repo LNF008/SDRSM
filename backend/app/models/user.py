@@ -33,6 +33,12 @@ class User(db.Model):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+    oauth_accounts = db.relationship(
+        "OAuthAccount",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
 
     # -- password helpers -------------------------------------------------
     def set_password(self, raw_password: str) -> None:
@@ -58,6 +64,10 @@ class User(db.Model):
         return "".join(part[0].upper() for part in picked)
 
     def to_dict(self, stats: dict | None = None) -> dict:
+        google_account = next(
+            (account for account in self.oauth_accounts if account.provider == "google"),
+            None,
+        )
         data = {
             "id": self.id,
             "fullName": self.full_name,
@@ -68,6 +78,9 @@ class User(db.Model):
             "faculty": self.faculty or "",
             "year": self.study_year or "",
             "plan": self.plan,
+            "authProvider": "google" if google_account else "local",
+            "hasGoogle": google_account is not None,
+            "avatarUrl": google_account.avatar_url if google_account else "",
             "joinedAt": self.created_at.date().isoformat() if self.created_at else None,
             "createdAt": iso_utc(self.created_at),
         }
