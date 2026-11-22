@@ -373,7 +373,9 @@ window.SDRSM = window.SDRSM || {};
       if (/[^A-Za-z0-9]/.test(value)) score += 1;
       const level = value ? Math.min(Math.max(score, 1), 4) : 0;
       meter.dataset.strength = String(level);
-      const label = meter.querySelector("span");
+      // Target the caption inside <small>. A bare `span` matched the first bar segment instead,
+      // which dumped the label text into the 4px-high strength bar (the overlapping text).
+      const label = meter.querySelector("small span");
       if (label) label.textContent = value ? labels[level - 1] : "Độ mạnh mật khẩu";
     });
   }
