@@ -64,13 +64,67 @@ window.SDRSM = window.SDRSM || {};
   }
 
   /**
+   * Tell the user (modal dialog) that the assessment must be completed first,
+   * then send them to the assessment wizard. Built on demand so it works even
+   * before the shared layout has mounted.
+   */
+  function showAssessmentRequired() {
+    const target = `${pagePath("assessment.html")}?first=1`;
+    const go = () => window.location.replace(target);
+
+    if (document.getElementById("needAssessmentDialog")) return;
+    if (!document.body || typeof HTMLDialogElement === "undefined") {
+      go();
+      return;
+    }
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "modal";
+    dialog.id = "needAssessmentDialog";
+    dialog.setAttribute("aria-labelledby", "needAssessmentTitle");
+    dialog.innerHTML = `
+      <div class="modal__head">
+        <span class="modal__icon">
+          <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
+        </span>
+        <div>
+          <h2 id="needAssessmentTitle" style="font-size: 1.02rem">Bạn cần hoàn thành bài đánh giá trước</h2>
+          <p class="text-muted text-sm">Trang này cần dữ liệu từ bài đánh giá rủi ro số của bạn.</p>
+        </div>
+      </div>
+      <div class="modal__body">
+        Dashboard, Báo cáo, Lịch sử và Khuyến nghị chỉ hiển thị sau khi bạn hoàn thành
+        bài đánh giá (25 câu hỏi, khoảng 7 phút). Bạn có thể lưu nháp và quay lại sau.
+      </div>
+      <div class="modal__foot">
+        <button class="btn btn-primary" type="button" id="needAssessmentGo">
+          Làm đánh giá ngay <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </button>
+      </div>`;
+    document.body.appendChild(dialog);
+
+    dialog.querySelector("#needAssessmentGo").addEventListener("click", go);
+    // Esc or a click on the backdrop also continues to the assessment.
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      go();
+    });
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) go();
+    });
+
+    dialog.showModal();
+    dialog.querySelector("#needAssessmentGo").focus();
+  }
+
+  /**
    * Await dashboard data and redirect accounts without an assessment to the
    * assessment wizard. Page scripts should stop when it resolves to null.
    */
   async function requireAssessment() {
     const data = await ready();
     if (!data.hasAssessment || !data.latest) {
-      window.location.replace(`${pagePath("assessment.html")}?first=1`);
+      showAssessmentRequired();
       return null;
     }
     return data;
