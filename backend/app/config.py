@@ -74,11 +74,6 @@ class BaseConfig:
 
     AUTO_CREATE_TABLES = _env_bool("AUTO_CREATE_TABLES", True)
 
-    # Seeded demo account (only created by ``flask seed``).
-    DEMO_EMAIL = os.getenv("DEMO_EMAIL", "demo@sdrsm.vn")
-    DEMO_PASSWORD = os.getenv("DEMO_PASSWORD", "Demo@12345")
-    DEMO_NAME = os.getenv("DEMO_NAME", "Nguyễn Minh Anh")
-
     JSON_SORT_KEYS = False
 
 

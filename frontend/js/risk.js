@@ -1,6 +1,6 @@
 /* ==========================================================================
    SDRSM — Risk domain helpers
-   Single source of truth for risk classification, formatting and local demo
+   Single source of truth for risk classification, formatting and local
    persistence. No API calls: everything here is frontend-only.
    ========================================================================== */
 
@@ -130,7 +130,7 @@ window.SDRSM = window.SDRSM || {};
     return formatDate(date);
   }
 
-  /* Local persistence (demo only — no personal data leaves the browser) ---- */
+  /* Local persistence (session, draft, preferences) ----------------------- */
   const STORAGE_KEYS = {
     theme: "sdrsm:theme",
     authSession: "sdrsm:auth",

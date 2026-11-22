@@ -19,11 +19,12 @@
     tailwind.config = { corePlugins: { preflight: false } };
   </script>
 
-  <link rel="stylesheet" href="../css/style.css?v=20261121" />
-  <link rel="stylesheet" href="../css/dashboard.css?v=20261121" />
-  <link rel="stylesheet" href="../css/responsive.css?v=20261121" />
+  <link rel="stylesheet" href="../css/style.css?v=20261122" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=20261122" />
+  <link rel="stylesheet" href="../css/responsive.css?v=20261122" />
 
-  <script src="../js/theme.js?v=20261121"></script>
+  <script src="../js/theme.js?v=20261122"></script>
+  <script src="../js/guard.js?v=20261122"></script>
 </head>
 
 <body data-page="recommendations">
@@ -68,8 +69,7 @@
             <div class="panel__body" style="display: flex; gap: 12px; align-items: flex-start">
               <i class="bi bi-info-circle" style="color: var(--info); font-size: 1.05rem" aria-hidden="true"></i>
               <p class="text-sm text-muted" style="line-height: 1.6">
-                Trạng thái hoàn thành được lưu trên trình duyệt của bạn. Đây là dữ liệu demo — khi tích hợp API,
-                trạng thái sẽ được đồng bộ với tài khoản sinh viên.
+                Trạng thái hoàn thành được lưu trong tài khoản SDRSM của bạn và đồng bộ giữa các thiết bị.
               </p>
             </div>
           </div>
@@ -82,12 +82,12 @@
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
 
-  <script src="../js/risk.js?v=20261121"></script>
-  <script src="../js/mock-data.js?v=20261121"></script>
-  <script src="../js/questions.js?v=20261121"></script>
-  <script src="../js/data-service.js?v=20261121"></script>
-  <script src="../js/layout.js?v=20261121"></script>
-  <script src="../js/main.js?v=20261121"></script>
-  <script src="../js/recommendations.js?v=20261121"></script>
+  <script src="../js/config.js?v=20261122"></script>
+  <script src="../js/risk.js?v=20261122"></script>
+  <script src="../js/api.js?v=20261122"></script>
+  <script src="../js/data-service.js?v=20261122"></script>
+  <script src="../js/layout.js?v=20261122"></script>
+  <script src="../js/main.js?v=20261122"></script>
+  <script src="../js/recommendations.js?v=20261122"></script>
 </body>
 </html>

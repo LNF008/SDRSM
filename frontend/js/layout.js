@@ -78,7 +78,7 @@ window.SDRSM = window.SDRSM || {};
         avatarUrl: account.avatarUrl || "",
       };
     }
-    return (ns.mockData && ns.mockData.user) || { name: "Sinh viên", initials: "SV", email: "" };
+    return { name: "Sinh viên", firstName: "bạn", initials: "SV", email: "", studentId: "" };
   }
 
   function avatarMarkup(user, extraClass) {
@@ -100,7 +100,7 @@ window.SDRSM = window.SDRSM || {};
             else active = settingsActive ? "" : " is-active";
           }
           const badge = item.badge
-            ? `<span class="nav-item__badge" aria-label="${item.badge} khuyến nghị ưu tiên">${item.badge}</span>`
+            ? `<span class="nav-item__badge" data-nav-badge aria-label="Khuyến nghị đang mở">${item.badge}</span>`
             : "";
           return `
             <a class="nav-item${active}" href="${item.href}">
@@ -113,22 +113,49 @@ window.SDRSM = window.SDRSM || {};
   }
 
   function notificationsMarkup() {
-    const items = (ns.mockData && ns.mockData.notifications) || [];
+    const items = (ns.data && ns.data.notifications && ns.data.notifications()) || [];
+    if (!items.length) {
+      return `<div class="menu__empty">Chưa có thông báo mới.</div>`;
+    }
     return items
       .map((item) => {
         const toneClass =
           item.tone === "critical" ? "stat-icon--rose" : item.tone === "low" ? "stat-icon--green" : "stat-icon--sky";
         return `
-          <div class="notif-item" role="button" tabindex="0" data-notif="${item.id}">
+          <div class="notif-item" role="button" tabindex="0" data-notif="${escapeAttr(item.id)}">
             <span class="notif-item__icon ${toneClass}"><i class="bi ${item.icon}" aria-hidden="true"></i></span>
             <div class="notif-item__body">
-              <p><strong>${item.title}</strong></p>
-              <p>${item.body}</p>
-              <time datetime="${item.time}">${ns.format.fromNow(item.time)}</time>
+              <p><strong>${escapeAttr(item.title)}</strong></p>
+              <p>${escapeAttr(item.body)}</p>
+              <time datetime="${escapeAttr(item.time)}">${ns.format.fromNow(item.time)}</time>
             </div>
           </div>`;
       })
       .join("");
+  }
+
+  function unreadCount() {
+    const items = (ns.data && ns.data.notifications && ns.data.notifications()) || [];
+    return items.filter((item) => item.unread).length;
+  }
+
+  function refreshDynamic() {
+    const panel = document.querySelector("[data-notif-panel]");
+    if (panel) panel.innerHTML = notificationsMarkup();
+
+    const unread = document.querySelector("[data-notif-count]");
+    if (unread) unread.textContent = `${unreadCount()} chưa đọc`;
+
+    const dot = document.querySelector("[data-notif-dot]");
+    if (dot) dot.hidden = unreadCount() === 0;
+
+    const badge = document.querySelector("[data-nav-badge]");
+    const stats = (ns.data && ns.data.recommendationStats && ns.data.recommendationStats()) || null;
+    if (badge && stats) {
+      const open = stats.open || 0;
+      badge.textContent = String(open);
+      badge.hidden = open === 0;
+    }
   }
 
   function mount() {
@@ -207,14 +234,14 @@ window.SDRSM = window.SDRSM || {};
           <div class="menu" data-menu>
             <button class="icon-btn" type="button" data-menu-toggle aria-label="Thông báo" aria-haspopup="true" aria-expanded="false">
               <i class="bi bi-bell" aria-hidden="true"></i>
-              <span class="notif-dot" aria-hidden="true"></span>
+              <span class="notif-dot" data-notif-dot aria-hidden="true"></span>
             </button>
             <div class="menu__panel menu__panel--wide" role="menu" aria-label="Thông báo">
               <div class="menu__head">
                 <strong>Thông báo</strong>
-                <span>2 chưa đọc</span>
+                <span data-notif-count>0 chưa đọc</span>
               </div>
-              ${notificationsMarkup()}
+              <div data-notif-panel>${notificationsMarkup()}</div>
               <div class="menu__divider"></div>
               <a class="menu__item" href="recommendations.html">
                 <i class="bi bi-lightbulb" aria-hidden="true"></i> Xem tất cả khuyến nghị
@@ -256,7 +283,7 @@ window.SDRSM = window.SDRSM || {};
           </span>
           <div>
             <h2 id="logoutTitle" style="font-size: 1rem">Đăng xuất khỏi SDRSM?</h2>
-            <p class="text-muted text-sm">Dữ liệu đánh giá demo vẫn được giữ trên trình duyệt này.</p>
+            <p class="text-muted text-sm">Bạn có thể đăng nhập lại bất cứ lúc nào.</p>
           </div>
           <button class="icon-btn icon-btn--ghost modal__close" type="button" data-dialog-close aria-label="Đóng">
             <i class="bi bi-x-lg" aria-hidden="true"></i>
@@ -269,8 +296,13 @@ window.SDRSM = window.SDRSM || {};
       </dialog>`;
 
     mounted = true;
+    refreshDynamic();
+    if (!window.__sdrsmDynamicBound) {
+      window.__sdrsmDynamicBound = true;
+      document.addEventListener("sdrsm:dashboard", refreshDynamic);
+    }
     document.dispatchEvent(new CustomEvent("sdrsm:layout-mounted"));
   }
 
-  ns.layout = { mount, PAGES };
+  ns.layout = { mount, PAGES, refreshDynamic };
 })(window.SDRSM);

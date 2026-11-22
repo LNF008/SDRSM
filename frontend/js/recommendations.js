@@ -21,12 +21,8 @@
   const groupsEl = document.getElementById("recommendationGroups");
   const hideDoneEl = document.getElementById("hideDone");
 
-  function toneFor(priority) {
-    return priority === "critical" ? "rose" : priority === "high" ? "amber" : priority === "medium" ? "sky" : "green";
-  }
-
-  function renderStats(all, stats) {
-    const percent = Math.round((stats.done / stats.total) * 100);
+  function renderStats(stats) {
+    const percent = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
     statsEl.innerHTML = `
       <article class="stat-card" style="--stat-glow: rgba(16,185,129,.16)">
         <div class="stat-card__top">
@@ -78,17 +74,26 @@
       .join("");
   }
 
+  function pillarGroups(all) {
+    const map = new Map();
+    all.forEach((rec) => {
+      if (rec.pillar && !map.has(rec.pillar.id)) map.set(rec.pillar.id, rec.pillar);
+    });
+    return Array.from(map.values()).sort((a, b) => (a.order || 0) - (b.order || 0));
+  }
+
   function recCard(rec) {
-    const meta = ns.risk.PRIORITIES[rec.priority];
+    const meta = ns.risk.PRIORITIES[rec.priority] || ns.risk.PRIORITIES.medium;
+    const pillar = rec.pillar || {};
     return `
       <article class="rec-card${rec.done ? " is-done" : ""}" id="rec-${rec.id}">
         <div class="rec-card__top">
-          <span class="rec-card__icon" style="color:${rec.pillar.color};background:${rec.pillar.soft}">
+          <span class="rec-card__icon" style="color:${pillar.color || "#6366f1"};background:${pillar.soft || "rgba(99,102,241,.13)"}">
             <i class="bi ${rec.icon}" aria-hidden="true"></i>
           </span>
           <div style="min-width:0">
             <p class="rec-card__title">${ns.ui.escapeHtml(rec.title)}</p>
-            <p class="rec-card__pillar">${rec.pillar.name} · ${rec.pillar.weight}%</p>
+            <p class="rec-card__pillar">${ns.ui.escapeHtml(pillar.name || "")}${pillar.weight ? ` · ${pillar.weight}%` : ""}</p>
           </div>
           <span class="badge ${meta.badge}" style="margin-left:auto;flex:0 0 auto">${meta.label}</span>
         </div>
@@ -101,7 +106,7 @@
         </div>
 
         <div class="rec-card__foot">
-          <span class="text-xs text-muted"><i class="bi bi-clock" aria-hidden="true"></i> ${TIME_TO_FIX[rec.priority]}</span>
+          <span class="text-xs text-muted"><i class="bi bi-clock" aria-hidden="true"></i> ${rec.timeToFix || TIME_TO_FIX[rec.priority] || "~15 phút"}</span>
           <button class="btn btn-sm ${rec.done ? "btn-soft" : "btn-outline"}" type="button" data-toggle-rec="${rec.id}">
             <i class="bi ${rec.done ? "bi-check2-circle" : "bi-circle"}" aria-hidden="true"></i>
             ${rec.done ? "Đã hoàn thành" : "Đánh dấu hoàn thành"}
@@ -111,13 +116,13 @@
   }
 
   function renderGroups(all) {
-    const fragilePillars = ns.mockData.pillars;
+    const pillars = pillarGroups(all);
     let renderedGroups = 0;
 
-    groupsEl.innerHTML = fragilePillars
+    groupsEl.innerHTML = pillars
       .map((pillar) => {
         const items = all
-          .filter((rec) => rec.pillarId === pillar.id)
+          .filter((rec) => rec.pillar && rec.pillar.id === pillar.id)
           .filter((rec) => state.priority === "all" || rec.priority === state.priority)
           .filter((rec) => !state.hideDone || !rec.done)
           .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
@@ -165,42 +170,66 @@
   function render() {
     const all = ns.data.recommendations();
     const stats = ns.data.recommendationStats(all);
-    renderStats(all, stats);
+    renderStats(stats);
     renderFilters(all);
     renderGroups(all);
     hideDoneEl.checked = state.hideDone;
   }
 
-  filterEl.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-priority]");
-    if (!button) return;
-    state.priority = button.dataset.priority;
-    render();
-  });
+  async function boot() {
+    const data = await ns.data.requireAssessment();
+    if (!data) return;
 
-  hideDoneEl.addEventListener("change", () => {
-    state.hideDone = hideDoneEl.checked;
-    renderGroups(ns.data.recommendations());
-  });
-
-  groupsEl.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-toggle-rec]");
-    if (!button) return;
-    const id = button.dataset.toggleRec;
-    const current = ns.data.recommendations().find((rec) => rec.id === id);
-    const nextDone = !(current && current.done);
-
-    ns.data.setRecommendationDone(id, nextDone);
-    ns.ui.toast({
-      title: nextDone ? "Đã đánh dấu hoàn thành" : "Đã mở lại khuyến nghị",
-      message: nextDone
-        ? "Tiến độ của bạn đã được cập nhật trên trình duyệt này."
-        : "Khuyến nghị được chuyển về trạng thái cần xử lý.",
-      type: nextDone ? "success" : "info",
+    filterEl.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-priority]");
+      if (!button) return;
+      state.priority = button.dataset.priority;
+      render();
     });
-    render();
-  });
 
-  render();
-  ns.ui.animateIn();
+    hideDoneEl.addEventListener("change", () => {
+      state.hideDone = hideDoneEl.checked;
+      renderGroups(ns.data.recommendations());
+    });
+
+    groupsEl.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-toggle-rec]");
+      if (!button) return;
+      const id = button.dataset.toggleRec;
+      const current = ns.data.recommendations().find((rec) => String(rec.id) === String(id));
+      const nextDone = !(current && current.done);
+
+      button.disabled = true;
+      try {
+        await ns.data.setRecommendationDone(id, nextDone);
+        ns.ui.toast({
+          title: nextDone ? "Đã đánh dấu hoàn thành" : "Đã mở lại khuyến nghị",
+          message: nextDone
+            ? "Tiến độ đã được lưu vào tài khoản của bạn."
+            : "Khuyến nghị được chuyển về trạng thái cần xử lý.",
+          type: nextDone ? "success" : "info",
+        });
+        render();
+      } catch (error) {
+        button.disabled = false;
+        ns.ui.toast({
+          title: "Chưa thể cập nhật",
+          message: error && error.message ? error.message : "Vui lòng thử lại.",
+          type: "error",
+        });
+      }
+    });
+
+    render();
+    ns.ui.animateIn();
+  }
+
+  boot().catch((error) => {
+    console.error("[SDRSM] Recommendations load failed:", error);
+    ns.ui.toast({
+      title: "Không tải được khuyến nghị",
+      message: error && error.message ? error.message : "Vui lòng thử lại.",
+      type: "error",
+    });
+  });
 })(window.SDRSM);

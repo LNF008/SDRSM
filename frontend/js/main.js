@@ -166,11 +166,16 @@ window.SDRSM = window.SDRSM || {};
       if (event.key === "Escape") closeAll();
     });
 
-    // Notification items are demo-only.
     document.addEventListener("click", (event) => {
       const item = event.target.closest("[data-notif]");
       if (!item) return;
-      toast({ title: "Thông báo demo", message: "Trung tâm thông báo sẽ kết nối API ở giai đoạn sau.", type: "info" });
+      const list = (ns.data && ns.data.notifications && ns.data.notifications()) || [];
+      const notif = list.find((entry) => String(entry.id) === String(item.dataset.notif));
+      toast({
+        title: notif ? notif.title : "Thông báo",
+        message: notif ? notif.body : "Đã mở thông báo.",
+        type: notif && notif.tone === "critical" ? "warn" : "info",
+      });
     });
   }
 
@@ -279,7 +284,7 @@ window.SDRSM = window.SDRSM || {};
     });
   }
 
-  /* Global search (demo) -------------------------------------------------- */
+  /* Global search --------------------------------------------------------- */
   function initSearch() {
     const input = $("#globalSearch");
     if (!input) return;
@@ -313,7 +318,7 @@ window.SDRSM = window.SDRSM || {};
       }
       toast({
         title: "Chưa có kết quả",
-        message: `Tìm kiếm “${input.value.trim()}” sẽ hoạt động khi kết nối API.`,
+        message: `Không tìm thấy trang phù hợp với “${input.value.trim()}”.`,
         type: "info",
       });
     });

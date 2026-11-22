@@ -3,7 +3,7 @@
 Works both locally and on Vercel:
 
     python run.py                      # http://127.0.0.1:5000
-    flask --app run.py seed            # load question bank + demo data
+    flask --app run.py seed            # load question bank
 
 Vercel loads this module as ``backend.run:app`` (see the root
 ``pyproject.toml``), so the backend directory must be importable as the

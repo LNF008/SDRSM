@@ -13,5 +13,5 @@ window.SDRSM = window.SDRSM || {};
 
 window.SDRSM.config = {
   apiBaseUrl: "http://127.0.0.1:5000",
-  googleClientId: "",
+  googleClientId: "628528126357-9kf79adedttabvlv7irknupk4fdqftar.apps.googleusercontent.com",
 };

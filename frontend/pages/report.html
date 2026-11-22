@@ -19,11 +19,12 @@
     tailwind.config = { corePlugins: { preflight: false } };
   </script>
 
-  <link rel="stylesheet" href="../css/style.css?v=20261121" />
-  <link rel="stylesheet" href="../css/dashboard.css?v=20261121" />
-  <link rel="stylesheet" href="../css/responsive.css?v=20261121" />
+  <link rel="stylesheet" href="../css/style.css?v=20261122" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=20261122" />
+  <link rel="stylesheet" href="../css/responsive.css?v=20261122" />
 
-  <script src="../js/theme.js?v=20261121"></script>
+  <script src="../js/theme.js?v=20261122"></script>
+  <script src="../js/guard.js?v=20261122"></script>
 </head>
 
 <body data-page="report">
@@ -81,7 +82,7 @@
               <div class="report-fact"><span>Điểm lần trước</span><strong id="reportPrevious">68/100</strong></div>
               <div class="report-fact"><span>Thay đổi</span><strong id="reportDelta">-6 điểm</strong></div>
               <div class="report-fact"><span>Cảnh báo nghiêm trọng</span><strong id="reportAlertCount">3</strong></div>
-              <div class="report-fact"><span>Nguồn dữ liệu</span><strong id="reportSource">Demo</strong></div>
+              <div class="report-fact"><span>Nguồn dữ liệu</span><strong id="reportSource">Hệ thống SDRSM</strong></div>
             </div>
           </section>
 
@@ -164,7 +165,7 @@
             <div class="panel__body" style="display: flex; gap: 12px; align-items: flex-start">
               <i class="bi bi-info-circle" style="color: var(--info); font-size: 1.05rem" aria-hidden="true"></i>
               <p class="text-sm text-muted" style="line-height: 1.6">
-                Báo cáo này được tạo từ dữ liệu <strong>demo</strong> của giao diện SDRSM. Điểm rủi ro được tổng hợp
+                Báo cáo này được tổng hợp từ bài đánh giá đã lưu trong tài khoản SDRSM của bạn. Điểm rủi ro được tổng hợp
                 theo trọng số 5 trụ cột (30/25/20/15/10) và cộng thêm tối đa 15 điểm cho các lỗi nghiêm trọng.
                 Hệ thống không hiển thị SafeScore — chỉ hiển thị RiskScore để tránh nhầm lẫn chiều đo.
                 <a href="assessment.html">Thực hiện đánh giá mới</a> để thay thế kết quả này.
@@ -180,13 +181,13 @@
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
 
-  <script src="../js/risk.js?v=20261121"></script>
-  <script src="../js/mock-data.js?v=20261121"></script>
-  <script src="../js/questions.js?v=20261121"></script>
-  <script src="../js/data-service.js?v=20261121"></script>
-  <script src="../js/layout.js?v=20261121"></script>
-  <script src="../js/main.js?v=20261121"></script>
-  <script src="../js/charts.js?v=20261121"></script>
-  <script src="../js/report.js?v=20261121"></script>
+  <script src="../js/config.js?v=20261122"></script>
+  <script src="../js/risk.js?v=20261122"></script>
+  <script src="../js/api.js?v=20261122"></script>
+  <script src="../js/data-service.js?v=20261122"></script>
+  <script src="../js/layout.js?v=20261122"></script>
+  <script src="../js/main.js?v=20261122"></script>
+  <script src="../js/charts.js?v=20261122"></script>
+  <script src="../js/report.js?v=20261122"></script>
 </body>
 </html>

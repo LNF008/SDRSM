@@ -1,11 +1,9 @@
 /* ==========================================================================
-   SDRSM — Demo data service
+   SDRSM — Data service
    --------------------------------------------------------------------------
-   Một lớp truy cập dữ liệu duy nhất cho Dashboard / Report / History.
-   - Nếu người dùng vừa hoàn thành bài đánh giá, kết quả trong localStorage
-     sẽ được ưu tiên hiển thị.
-   - Nếu chưa, dùng bộ mock data để demo giao diện.
-   Khi có REST API, chỉ cần thay phần thân của các hàm bên dưới bằng fetch().
+   Single access point for the authenticated pages. All data comes from the
+   REST API; the dashboard payload is cached for the lifetime of the page and
+   kept in sync when a recommendation is toggled.
    ========================================================================== */
 
 window.SDRSM = window.SDRSM || {};
@@ -13,150 +11,207 @@ window.SDRSM = window.SDRSM || {};
 (function (ns) {
   "use strict";
 
-  const KEYS = ns.store.KEYS;
-  const mock = () => ns.mockData;
+  const state = {
+    dashboard: null,
+    dashboardPromise: null,
+    catalog: null,
+    catalogPromise: null,
+  };
+
+  const EMPTY_COMPARISON = { previous: null, delta: 0, direction: "flat", improved: false };
+  const EMPTY_STATS = { total: 0, done: 0, open: 0, criticalOpen: 0 };
+
+  function inPages() {
+    return /\/pages\//.test(window.location.pathname);
+  }
+
+  function pagePath(name) {
+    return inPages() ? name : `pages/${name}`;
+  }
 
   function pillarMap(pillars) {
-    return pillars.reduce((acc, pillar) => {
+    return (pillars || []).reduce((acc, pillar) => {
       acc[pillar.id] = pillar;
       return acc;
     }, {});
   }
 
+  async function loadDashboard(force) {
+    if (state.dashboard && !force) return state.dashboard;
+    if (state.dashboardPromise && !force) return state.dashboardPromise;
+
+    state.dashboardPromise = ns.api
+      .get("/api/dashboard")
+      .then((data) => {
+        state.dashboard = data;
+        state.dashboardPromise = null;
+        document.dispatchEvent(new CustomEvent("sdrsm:dashboard", { detail: data }));
+        return data;
+      })
+      .catch((error) => {
+        state.dashboardPromise = null;
+        throw error;
+      });
+
+    return state.dashboardPromise;
+  }
+
   /**
-   * Latest assessment (real demo result if available, otherwise mock data).
+   * Load (or return the cached) dashboard payload.
    */
-  function currentAssessment() {
-    const saved = ns.store.get(KEYS.lastAssessment, null);
-    const base = mock();
+  function ready(force) {
+    return loadDashboard(Boolean(force));
+  }
 
-    if (!saved || typeof saved.overallRisk !== "number") {
-      return {
-        source: "mock",
-        id: base.lastAssessmentId,
-        date: base.lastAssessmentAt,
-        overallRisk: base.overallRisk,
-        previousRisk: base.previousRisk,
-        criticalPenalty: base.criticalPenalty || 0,
-        pillars: base.pillars,
-        alerts: base.alerts,
-        answers: null,
-      };
+  /**
+   * Await dashboard data and redirect accounts without an assessment to the
+   * assessment wizard. Page scripts should stop when it resolves to null.
+   */
+  async function requireAssessment() {
+    const data = await ready();
+    if (!data.hasAssessment || !data.latest) {
+      window.location.replace(`${pagePath("assessment.html")}?first=1`);
+      return null;
     }
+    return data;
+  }
 
-    const savedPillars = saved.pillarScores || {};
-    const savedIndicators = saved.indicators || {};
-    const pillars = base.pillars.map((pillar) => ({
-      ...pillar,
-      score: Number.isFinite(savedPillars[pillar.id]) ? savedPillars[pillar.id] : pillar.score,
-      indicators: pillar.indicators.map((indicator) => ({
-        ...indicator,
-        score: Number.isFinite((savedIndicators[pillar.id] || {})[indicator.key])
-          ? savedIndicators[pillar.id][indicator.key]
-          : indicator.score,
-      })),
-    }));
-
-    return {
-      source: "saved",
-      id: saved.id,
-      date: saved.createdAt,
-      overallRisk: saved.overallRisk,
-      previousRisk: Number.isFinite(saved.previousRisk) ? saved.previousRisk : base.overallRisk,
-      criticalPenalty: saved.criticalPenalty || 0,
-      pillars,
-      alerts: (saved.alerts || []).map((alert) => ({
-        ...alert,
-        pillarId: alert.pillarId || "p1",
-        severity: alert.severity || "critical",
-      })),
-      answers: saved.answers || null,
+  function dashboard() {
+    return state.dashboard || {
+      user: null,
+      hasAssessment: false,
+      latest: null,
+      comparison: EMPTY_COMPARISON,
+      history: [],
+      trend: [],
+      recommendations: { items: [], stats: EMPTY_STATS, assessmentId: null },
+      notifications: [],
+      activity: [],
     };
   }
 
-  /**
-   * History = saved demo result + mock history, newest first.
-   */
+  function currentAssessment() {
+    return dashboard().latest;
+  }
+
+  function comparison() {
+    return dashboard().comparison || EMPTY_COMPARISON;
+  }
+
   function history() {
-    const saved = ns.store.get(KEYS.lastAssessment, null);
-    const rows = mock().history.slice();
-    if (saved && typeof saved.overallRisk === "number") {
-      rows.unshift({
-        id: saved.id,
-        date: saved.createdAt,
-        score: saved.overallRisk,
-        criticalCount: (saved.alerts || []).length,
-        source: "saved",
-      });
-    }
-    return rows
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .map((row, index, list) => ({
-        ...row,
-        previousScore: list[index + 1] ? list[index + 1].score : null,
-      }));
+    return dashboard().history || [];
   }
 
-  /**
-   * Recommendations with completion overrides persisted in localStorage.
-   */
   function recommendations() {
-    const overrides = ns.store.get(KEYS.completedRecommendations, {});
-    return mock().recommendations.map((rec) => ({
-      ...rec,
-      pillar: pillarMap(mock().pillars)[rec.pillarId],
-      done: Object.prototype.hasOwnProperty.call(overrides, rec.id) ? Boolean(overrides[rec.id]) : rec.done,
-    }));
-  }
-
-  function setRecommendationDone(id, done) {
-    const overrides = ns.store.get(KEYS.completedRecommendations, {});
-    overrides[id] = Boolean(done);
-    ns.store.set(KEYS.completedRecommendations, overrides);
-    return recommendations();
+    const block = dashboard().recommendations || {};
+    return block.items || [];
   }
 
   function recommendationStats(list) {
-    const items = list || recommendations();
-    return {
-      total: items.length,
-      done: items.filter((item) => item.done).length,
-      open: items.filter((item) => !item.done).length,
-      criticalOpen: items.filter((item) => !item.done && item.priority === "critical").length,
-    };
+    if (list) {
+      const items = list;
+      return {
+        total: items.length,
+        done: items.filter((item) => item.done).length,
+        open: items.filter((item) => !item.done).length,
+        criticalOpen: items.filter((item) => !item.done && item.priority === "critical").length,
+      };
+    }
+    return (dashboard().recommendations || {}).stats || EMPTY_STATS;
+  }
+
+  function notifications() {
+    return dashboard().notifications || [];
+  }
+
+  function activity() {
+    return dashboard().activity || [];
+  }
+
+  function user() {
+    return dashboard().user || null;
   }
 
   /**
-   * Risk alerts, only for the mock set or a saved assessment.
+   * Persist a recommendation toggle and keep cached state consistent.
+   * Returns the API response `{ item, stats }`.
    */
-  function criticalAlerts(assessment) {
-    const current = assessment || currentAssessment();
-    return current.alerts || [];
+  async function setRecommendationDone(id, done) {
+    const result = await ns.api.patch(`/api/recommendations/${encodeURIComponent(id)}`, {
+      done: Boolean(done),
+    });
+
+    const block = dashboard().recommendations;
+    if (block && Array.isArray(block.items)) {
+      const item = block.items.find((rec) => String(rec.id) === String(id));
+      if (item && result.item) Object.assign(item, result.item);
+      if (result.stats) block.stats = result.stats;
+    }
+
+    return result;
   }
 
   /**
-   * Comparison helpers used by Dashboard / History.
+   * Full detail for one assessment (`?id=` on the report page).
    */
-  function comparison() {
-    const current = currentAssessment();
-    const previous = Number.isFinite(current.previousRisk) ? current.previousRisk : null;
-    const delta = previous === null ? 0 : current.overallRisk - previous;
-    return {
-      previous,
-      delta,
-      direction: delta < 0 ? "down" : delta > 0 ? "up" : "flat",
-      improved: delta < 0,
-    };
+  function getAssessment(id) {
+    return ns.api.get(`/api/assessments/${encodeURIComponent(id)}`);
+  }
+
+  /**
+   * Question bank for the assessment wizard. The API sends pillar indicators
+   * as a list; the wizard expects a map keyed by indicator slug.
+   */
+  async function catalog() {
+    if (state.catalog) return state.catalog;
+    if (state.catalogPromise) return state.catalogPromise;
+
+    state.catalogPromise = ns.api
+      .get("/api/assessments/catalog")
+      .then((data) => {
+        const pillars = {};
+        (data.pillars || []).forEach((pillar) => {
+          const indicators = {};
+          (pillar.indicators || []).forEach((indicator) => {
+            indicators[indicator.key] = {
+              name: indicator.name,
+              weight: indicator.weight,
+            };
+          });
+          pillars[pillar.id] = Object.assign({}, pillar, { indicators });
+        });
+
+        state.catalog = {
+          pillars,
+          questions: data.questions || [],
+          pillarList: data.pillars || [],
+        };
+        state.catalogPromise = null;
+        return state.catalog;
+      })
+      .catch((error) => {
+        state.catalogPromise = null;
+        throw error;
+      });
+
+    return state.catalogPromise;
   }
 
   ns.data = {
+    ready,
+    requireAssessment,
+    dashboard,
     currentAssessment,
+    comparison,
     history,
     recommendations,
-    setRecommendationDone,
     recommendationStats,
-    criticalAlerts,
-    comparison,
+    notifications,
+    activity,
+    user,
+    setRecommendationDone,
+    getAssessment,
+    catalog,
     pillarMap,
   };
 })(window.SDRSM);

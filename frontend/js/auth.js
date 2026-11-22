@@ -164,9 +164,23 @@ window.SDRSM = window.SDRSM || {};
     }
   }
 
+  function afterLoginUrl() {
+    const fallback = "pages/dashboard.html";
+    const raw = new URLSearchParams(window.location.search).get("next");
+    if (!raw) return fallback;
+    try {
+      const target = new URL(raw, window.location.origin);
+      if (target.origin !== window.location.origin) return fallback;
+      if (!/\.html$/i.test(target.pathname)) return fallback;
+      return target.pathname + target.search + target.hash;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
   function completeAuth(payload) {
     ns.session.save(payload);
-    window.location.href = "pages/dashboard.html";
+    window.location.href = afterLoginUrl();
   }
 
   function readValue(form, name) {
