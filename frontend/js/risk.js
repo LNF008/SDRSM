@@ -133,6 +133,7 @@ window.SDRSM = window.SDRSM || {};
   /* Local persistence (demo only — no personal data leaves the browser) ---- */
   const STORAGE_KEYS = {
     theme: "sdrsm:theme",
+    authSession: "sdrsm:auth",
     lastAssessment: "sdrsm:last-assessment",
     assessmentDraft: "sdrsm:assessment-draft",
     completedRecommendations: "sdrsm:completed-recommendations",
@@ -179,5 +180,36 @@ window.SDRSM = window.SDRSM || {};
 
   ns.format = { formatDate, formatDateTime, fromNow };
 
+  /* Authenticated session (JWT + user profile) ---------------------------- */
+  function readSession() {
+    const session = store.get(STORAGE_KEYS.authSession, null);
+    if (!session || typeof session !== "object" || !session.token) return null;
+    const expiresAt = Number(session.expiresAt);
+    if (Number.isFinite(expiresAt) && expiresAt > 0 && Date.now() >= expiresAt) {
+      store.remove(STORAGE_KEYS.authSession);
+      return null;
+    }
+    return session;
+  }
+
+  function saveSession(payload) {
+    if (!payload || !payload.token) return null;
+    const expiresIn = Number(payload.expiresIn) || 0;
+    const session = {
+      token: payload.token,
+      tokenType: payload.tokenType || "Bearer",
+      expiresAt: expiresIn > 0 ? Date.now() + expiresIn * 1000 : 0,
+      user: payload.user || null,
+      savedAt: Date.now(),
+    };
+    store.set(STORAGE_KEYS.authSession, session);
+    return session;
+  }
+
+  function clearSession() {
+    store.remove(STORAGE_KEYS.authSession);
+  }
+
   ns.store = { KEYS: STORAGE_KEYS, ...store };
+  ns.session = { get: readSession, save: saveSession, clear: clearSession };
 })(window.SDRSM);

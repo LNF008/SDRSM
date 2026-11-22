@@ -5,7 +5,25 @@
 (function (ns) {
   "use strict";
 
-  const user = ns.mockData.user;
+  const session = ns.session && ns.session.get();
+  const account = session && session.user;
+  const user = account
+    ? {
+        name: account.fullName || account.name || "Sinh viên",
+        email: account.email || "",
+        studentId: account.studentId || "",
+        faculty: account.faculty || "",
+        year: account.year || "",
+        joinedAt: account.joinedAt || "",
+        initials: account.initials || String(account.fullName || "SV")
+          .trim()
+          .split(/\s+/)
+          .slice(-2)
+          .map((part) => part.charAt(0))
+          .join("")
+          .toUpperCase(),
+      }
+    : ns.mockData.user;
   const assessment = ns.data.currentAssessment();
   const level = ns.risk.classify(assessment.overallRisk);
   const recStats = ns.data.recommendationStats();

@@ -51,6 +51,44 @@ window.SDRSM = window.SDRSM || {};
 
   let mounted = false;
 
+  function escapeAttr(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, (char) => {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char];
+    });
+  }
+
+  function initialsFrom(name) {
+    const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return "SV";
+    return parts.slice(-2).map((part) => part.charAt(0)).join("").toUpperCase();
+  }
+
+  function resolveUser() {
+    const session = ns.session && ns.session.get();
+    const account = session && session.user;
+    if (account && (account.email || account.fullName)) {
+      const name = account.fullName || account.name || "Sinh viên";
+      return {
+        name,
+        firstName: account.firstName || name.split(/\s+/).slice(-2).join(" "),
+        initials: account.initials || initialsFrom(name),
+        email: account.email || "",
+        studentId: account.studentId || "",
+        plan: account.plan || "Tài khoản sinh viên",
+        avatarUrl: account.avatarUrl || "",
+      };
+    }
+    return (ns.mockData && ns.mockData.user) || { name: "Sinh viên", initials: "SV", email: "" };
+  }
+
+  function avatarMarkup(user, extraClass) {
+    const className = `avatar${extraClass ? ` ${extraClass}` : ""}`;
+    if (user.avatarUrl) {
+      return `<span class="${className}"><img src="${escapeAttr(user.avatarUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer" /></span>`;
+    }
+    return `<span class="${className}" aria-hidden="true">${escapeAttr(user.initials)}</span>`;
+  }
+
   function navMarkup(page) {
     const settingsActive = page === "profile" && window.location.hash === "#settings";
     return NAV.map((group) => {
@@ -97,7 +135,7 @@ window.SDRSM = window.SDRSM || {};
     if (mounted) return;
     const page = document.body.dataset.page || "dashboard";
     const config = PAGES[page] || PAGES.dashboard;
-    const user = (ns.mockData && ns.mockData.user) || { name: "Sinh viên", initials: "SV", email: "" };
+    const user = resolveUser();
 
     const sidebarSlot = document.getElementById("sidebar-root");
     const topbarSlot = document.getElementById("topbar-root");
@@ -123,10 +161,10 @@ window.SDRSM = window.SDRSM || {};
 
         <div class="sidebar__footer">
           <div class="sidebar__user">
-            <span class="avatar" aria-hidden="true">${user.initials}</span>
+            ${avatarMarkup(user)}
             <div class="sidebar__user-meta">
-              <strong>${user.name}</strong>
-              <span>${user.plan || "Sinh viên"}</span>
+              <strong>${escapeAttr(user.name)}</strong>
+              <span>${escapeAttr(user.plan || "Sinh viên")}</span>
             </div>
           </div>
           <a class="nav-item nav-item--danger" href="../index.html" data-logout>
@@ -188,15 +226,15 @@ window.SDRSM = window.SDRSM || {};
 
           <div class="menu" data-menu>
             <button class="user-btn" type="button" data-menu-toggle aria-haspopup="true" aria-expanded="false">
-              <span class="avatar avatar--sm" aria-hidden="true">${user.initials}</span>
-              <span class="user-btn__meta"><strong>${user.name}</strong><span>${user.studentId}</span></span>
+              ${avatarMarkup(user, "avatar--sm")}
+              <span class="user-btn__meta"><strong>${escapeAttr(user.name)}</strong><span>${escapeAttr(user.studentId)}</span></span>
               <i class="bi bi-chevron-down" aria-hidden="true"></i>
             </button>
             <div class="menu__panel" role="menu" aria-label="Tài khoản">
               <div class="menu__head">
                 <div>
-                  <strong>${user.name}</strong><br />
-                  <span>${user.email}</span>
+                  <strong>${escapeAttr(user.name)}</strong><br />
+                  <span>${escapeAttr(user.email)}</span>
                 </div>
               </div>
               <a class="menu__item" href="profile.html"><i class="bi bi-person" aria-hidden="true"></i> Hồ sơ cá nhân</a>
@@ -226,7 +264,7 @@ window.SDRSM = window.SDRSM || {};
         </div>
         <div class="modal__foot">
           <button class="btn btn-outline" type="button" data-dialog-close>Ở lại</button>
-          <a class="btn btn-danger" href="../index.html"><i class="bi bi-box-arrow-left" aria-hidden="true"></i> Đăng xuất</a>
+          <a class="btn btn-danger" href="../index.html" data-logout-confirm><i class="bi bi-box-arrow-left" aria-hidden="true"></i> Đăng xuất</a>
         </div>
       </dialog>`;
 

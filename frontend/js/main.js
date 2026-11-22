@@ -190,7 +190,15 @@ window.SDRSM = window.SDRSM || {};
         if (dialog && typeof dialog.showModal === "function") {
           event.preventDefault();
           dialog.showModal();
+        } else if (ns.session) {
+          ns.session.clear();
         }
+        return;
+      }
+
+      const confirmLogout = event.target.closest("[data-logout-confirm]");
+      if (confirmLogout && ns.session) {
+        ns.session.clear();
       }
     });
 

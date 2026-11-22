@@ -471,6 +471,7 @@ body.sidebar-open .sidebar-overlay { opacity: 1; visibility: visible; }
 }
 .avatar--lg { width: 64px; height: 64px; flex-basis: 64px; border-radius: 18px; font-size: 1.25rem; }
 .avatar--sm { width: 30px; height: 30px; flex-basis: 30px; border-radius: 9px; font-size: 0.68rem; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 
 /* 6. Topbar --------------------------------------------------------------- */
 .topbar {
@@ -1281,13 +1282,20 @@ dialog.modal[open] { display: block; animation: modalIn 0.22s cubic-bezier(0.2, 
 .hero__score-center {
   position: absolute;
   inset: 0;
-  display:grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  /* Optical centering: place the number on the ring's true centre and let the
+     label sit just below it, instead of centering the two-line block as a whole. */
+  padding-top: 0.9rem;
   text-align: center;
-  line-height: 1.1;
+  line-height: 1;
+  pointer-events: none;
 }
-.hero__score-center strong { font-size: 1.7rem; display: block; letter-spacing: -0.03em; }
-.hero__score-center span { font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.hero__score-center strong { font-size: 1.7rem; display: block; line-height: 1; letter-spacing: -0.03em; }
+.hero__score-center span { font-size: 0.66rem; line-height: 1; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
 .hero__pillars { display: flex; flex-direction: column; gap: 10px; }
 .hero__pillar { display: flex; flex-direction: column; gap: 4px; }
 .hero__pillar-top { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-2); }

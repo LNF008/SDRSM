@@ -12,7 +12,11 @@
   const levelMax = level.max;
 
   /* Welcome --------------------------------------------------------------- */
-  const userName = ns.mockData.user.firstName;
+  const session = ns.session && ns.session.get();
+  const sessionUser = session && session.user;
+  const userName = sessionUser
+    ? sessionUser.firstName || sessionUser.fullName || sessionUser.email
+    : ns.mockData.user.firstName;
   document.getElementById("welcomeName").textContent = userName;
   document.getElementById("welcomeDate").textContent = ns.format.formatDate(assessment.date);
   document.getElementById("overallDate").textContent = ns.format.formatDate(assessment.date);
