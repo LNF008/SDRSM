@@ -82,6 +82,13 @@
               <!-- Tab: profile -->
               <div class="tab-panel is-active" id="tab-profile" role="tabpanel">
                 <div class="panel__body">
+                  <div class="risk-note" style="margin-bottom: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px">
+                    <span id="editHint"><i class="bi bi-info-circle" aria-hidden="true"></i> Các ô bên dưới đang ở chế độ chỉ xem. Bấm “Chỉnh sửa” để thay đổi họ tên, email, MSSV, khoa và năm học.</span>
+                    <span style="display: flex; gap: 8px">
+                      <button class="btn btn-outline btn-sm" type="button" id="cancelEditBtn" style="display: none">Huỷ</button>
+                      <button class="btn btn-primary btn-sm" type="button" id="editProfileInlineBtn"><i class="bi bi-pencil" aria-hidden="true"></i> Chỉnh sửa</button>
+                    </span>
+                  </div>
                   <div class="form-grid">
                     <div class="field">
                       <label class="field__label" for="inputFullName">Họ và tên</label>
@@ -170,6 +177,12 @@
               <!-- Tab: settings -->
               <div class="tab-panel" id="tab-settings" role="tabpanel">
                 <div class="panel__body">
+                  <h3 style="font-size:.9rem;margin-bottom:6px">Thông tin cá nhân</h3>
+                  <p class="text-muted text-xs" style="margin-bottom: 10px">Họ tên, email, MSSV, khoa và năm học được chỉnh trong mục Hồ sơ.</p>
+                  <button class="btn btn-outline" type="button" id="goEditProfileBtn" style="margin-bottom: 22px">
+                    <i class="bi bi-person-gear" aria-hidden="true"></i> Chỉnh sửa thông tin cá nhân
+                  </button>
+
                   <h3 style="font-size:.9rem;margin-bottom:10px">Giao diện</h3>
                   <div class="field" style="max-width: 320px">
                     <label class="field__label" for="themeSelect">Chế độ hiển thị</label>
