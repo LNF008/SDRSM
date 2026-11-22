@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Lịch sử đánh giá rủi ro số SDRSM — so sánh điểm theo thời gian." />
+  <meta name="theme-color" content="#f3f5fb" />
+  <title>Lịch sử đánh giá · SDRSM</title>
+
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { corePlugins: { preflight: false } };
+  </script>
+
+  <link rel="stylesheet" href="../css/style.css?v=20261121" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=20261121" />
+  <link rel="stylesheet" href="../css/responsive.css?v=20261121" />
+
+  <script src="../js/theme.js?v=20261121"></script>
+</head>
+
+<body data-page="history">
+  <div class="app">
+    <div id="sidebar-root"></div>
+
+    <div class="app__main">
+      <div id="topbar-root"></div>
+
+      <main class="app__content" id="main-content">
+        <div class="page-width">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow"><i class="bi bi-clock-history" aria-hidden="true"></i> Theo dõi tiến bộ</p>
+              <h2 class="page-head__title">Lịch sử đánh giá</h2>
+              <p class="page-head__desc">So sánh điểm rủi ro qua từng lần đánh giá và xác định xu hướng cải thiện.</p>
+            </div>
+            <div class="page-head__actions">
+              <button class="btn btn-outline" type="button" id="exportHistory">
+                <i class="bi bi-filetype-csv" aria-hidden="true"></i> Xuất CSV
+              </button>
+              <a class="btn btn-primary" href="assessment.html">
+                <i class="bi bi-clipboard-plus" aria-hidden="true"></i> Đánh giá mới
+              </a>
+            </div>
+          </div>
+
+          <div class="grid grid--main-side">
+            <section class="panel chart-panel" data-animate>
+              <div class="panel__head">
+                <div>
+                  <h2 class="panel__title"><i class="bi bi-graph-up" aria-hidden="true"></i> Xu hướng RiskScore</h2>
+                  <p class="panel__sub">Điểm càng thấp càng an toàn · đường càng đi xuống càng tốt</p>
+                </div>
+                <div class="panel__actions">
+                  <span class="badge badge--low" id="trendBadge">
+                    <i class="bi bi-arrow-down-right" aria-hidden="true"></i> Đang cải thiện
+                  </span>
+                </div>
+              </div>
+              <div class="panel__body">
+                <div class="chart-box chart-box--line">
+                  <canvas id="historyLine" role="img" aria-label="Biểu đồ đường điểm rủi ro theo thời gian"></canvas>
+                </div>
+                <div class="legend" style="margin-top: 12px">
+                  <span class="legend__item"><span class="legend__swatch" style="--swatch: var(--brand-500)"></span> RiskScore qua các lần đánh giá</span>
+                  <span class="legend__item"><span class="legend__swatch" style="--swatch: var(--low)"></span> Ngưỡng an toàn khuyến nghị ≤ 30</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" data-animate>
+              <div class="panel__head">
+                <div>
+                  <h2 class="panel__title"><i class="bi bi-activity" aria-hidden="true"></i> Tổng quan xu hướng</h2>
+                  <p class="panel__sub">Dựa trên toàn bộ lịch sử đánh giá</p>
+                </div>
+              </div>
+              <div class="panel__body">
+                <div class="history-compare" style="margin-bottom: 16px">
+                  <div class="history-compare__item">
+                    <span>Mới nhất</span>
+                    <strong id="latestScore">62</strong>
+                  </div>
+                  <i class="bi bi-arrow-right history-compare__arrow" aria-hidden="true"></i>
+                  <div class="history-compare__item">
+                    <span>Lần trước</span>
+                    <strong id="previousScore">65</strong>
+                  </div>
+                  <span class="badge badge--low" id="latestDelta" style="margin-left: auto">-3 điểm</span>
+                </div>
+
+                <div class="detail-list" id="historySummary"></div>
+
+                <div class="risk-note" style="margin-top: 14px">
+                  <i class="bi bi-lightbulb" aria-hidden="true"></i>
+                  <span id="historyInsight">Bạn đã giảm được 16 điểm rủi ro trong 9 tháng. Tiếp tục xử lý các khuyến nghị ưu tiên để về ngưỡng an toàn.</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section class="panel section-gap" data-animate>
+            <div class="panel__head">
+              <div>
+                <h2 class="panel__title"><i class="bi bi-table" aria-hidden="true"></i> Danh sách đánh giá</h2>
+                <p class="panel__sub">Mỗi dòng tương ứng một lần hoàn thành 25 câu hỏi</p>
+              </div>
+              <div class="panel__actions">
+                <select class="select-sm" id="levelFilter" aria-label="Lọc theo mức rủi ro">
+                  <option value="all">Tất cả mức rủi ro</option>
+                  <option value="low">Thấp (0–24)</option>
+                  <option value="medium">Trung bình (25–49)</option>
+                  <option value="high">Cao (50–74)</option>
+                  <option value="critical">Nghiêm trọng (75–100)</option>
+                </select>
+              </div>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Mã đánh giá</th>
+                      <th scope="col">Ngày</th>
+                      <th scope="col">RiskScore</th>
+                      <th scope="col">Mức rủi ro</th>
+                      <th scope="col">So với lần trước</th>
+                      <th scope="col">Cảnh báo</th>
+                      <th scope="col"><span class="sr-only">Hành động</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel__foot">
+              <span id="tableSummary">Hiển thị 8/8 lần đánh giá</span>
+              <span class="text-muted text-xs">Nhấn “Xem” để mở báo cáo tương ứng (demo dùng báo cáo mới nhất).</span>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+
+  <script src="../js/risk.js?v=20261121"></script>
+  <script src="../js/mock-data.js?v=20261121"></script>
+  <script src="../js/questions.js?v=20261121"></script>
+  <script src="../js/data-service.js?v=20261121"></script>
+  <script src="../js/layout.js?v=20261121"></script>
+  <script src="../js/main.js?v=20261121"></script>
+  <script src="../js/charts.js?v=20261121"></script>
+  <script src="../js/history.js?v=20261121"></script>
+</body>
+</html>

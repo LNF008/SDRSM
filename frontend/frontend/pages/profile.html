@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Hồ sơ và cài đặt SDRSM." />
+  <meta name="theme-color" content="#f3f5fb" />
+  <title>Hồ sơ &amp; Cài đặt · SDRSM</title>
+
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { corePlugins: { preflight: false } };
+  </script>
+
+  <link rel="stylesheet" href="../css/style.css?v=20261121" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=20261121" />
+  <link rel="stylesheet" href="../css/responsive.css?v=20261121" />
+
+  <script src="../js/theme.js?v=20261121"></script>
+</head>
+
+<body data-page="profile">
+  <div class="app">
+    <div id="sidebar-root"></div>
+
+    <div class="app__main">
+      <div id="topbar-root"></div>
+
+      <main class="app__content" id="main-content">
+        <div class="page-width">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow"><i class="bi bi-person-gear" aria-hidden="true"></i> Tài khoản</p>
+              <h2 class="page-head__title">Hồ sơ &amp; Cài đặt</h2>
+              <p class="page-head__desc">Quản lý thông tin sinh viên, bảo mật tài khoản và tuỳ chọn hiển thị.</p>
+            </div>
+            <div class="page-head__actions">
+              <a class="btn btn-primary" href="assessment.html">
+                <i class="bi bi-clipboard-plus" aria-hidden="true"></i> Đánh giá mới
+              </a>
+            </div>
+          </div>
+
+          <!-- Profile hero -->
+          <section class="profile-hero" data-animate>
+            <span class="avatar avatar--lg" id="profileAvatar">MA</span>
+            <div>
+              <h2 class="profile-hero__name" id="profileName">Nguyễn Minh Anh</h2>
+              <div class="profile-hero__meta">
+                <span><i class="bi bi-envelope" aria-hidden="true"></i> <span id="profileEmail">minhanh.nguyen@student.edu.vn</span></span>
+                <span><i class="bi bi-person-badge" aria-hidden="true"></i> MSSV <span id="profileStudentId">21510xxx</span></span>
+                <span><i class="bi bi-building" aria-hidden="true"></i> <span id="profileFaculty">Công nghệ thông tin</span></span>
+                <span><i class="bi bi-mortarboard" aria-hidden="true"></i> <span id="profileYear">Năm 3</span></span>
+              </div>
+            </div>
+            <div class="profile-hero__actions">
+              <button class="btn btn-outline" type="button" id="editProfileBtn">
+                <i class="bi bi-pencil" aria-hidden="true"></i> Chỉnh sửa hồ sơ
+              </button>
+              <a class="btn btn-outline" href="report.html">
+                <i class="bi bi-shield-check" aria-hidden="true"></i> Báo cáo của tôi
+              </a>
+            </div>
+          </section>
+
+          <div class="grid grid--main-side section-gap">
+            <section class="panel" data-animate>
+              <div class="tabs" role="tablist" aria-label="Các mục hồ sơ">
+                <button class="tab is-active" type="button" role="tab" data-tab="profile" aria-selected="true" aria-controls="tab-profile">Hồ sơ</button>
+                <button class="tab" type="button" role="tab" data-tab="security" aria-selected="false" aria-controls="tab-security">Bảo mật</button>
+                <button class="tab" type="button" role="tab" data-tab="settings" aria-selected="false" aria-controls="tab-settings">Tuỳ chọn</button>
+              </div>
+
+              <!-- Tab: profile -->
+              <div class="tab-panel is-active" id="tab-profile" role="tabpanel">
+                <div class="panel__body">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label class="field__label" for="inputFullName">Họ và tên</label>
+                      <input class="input" id="inputFullName" type="text" value="Nguyễn Minh Anh" disabled />
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="inputEmail">Email sinh viên</label>
+                      <input class="input" id="inputEmail" type="email" value="minhanh.nguyen@student.edu.vn" disabled />
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="inputStudentId">Mã số sinh viên</label>
+                      <input class="input" id="inputStudentId" type="text" value="21510xxx" disabled />
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="inputFaculty">Khoa / Ngành</label>
+                      <input class="input" id="inputFaculty" type="text" value="Công nghệ thông tin" disabled />
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="inputYear">Năm học</label>
+                      <input class="input" id="inputYear" type="text" value="Năm 3" disabled />
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="inputJoined">Ngày tham gia</label>
+                      <input class="input" id="inputJoined" type="text" value="14/02/2026" disabled />
+                    </div>
+                  </div>
+
+                  <div class="detail-list" style="margin-top: 4px">
+                    <div class="detail-row">
+                      <span class="detail-row__label"><i class="bi bi-shield-exclamation" aria-hidden="true"></i> Mức rủi ro hiện tại</span>
+                      <span class="detail-row__value" id="profileRiskLevel">Cao · 62/100</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-row__label"><i class="bi bi-calendar-check" aria-hidden="true"></i> Lần đánh giá gần nhất</span>
+                      <span class="detail-row__value" id="profileLastAssessment">12/11/2026</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-row__label"><i class="bi bi-lightbulb" aria-hidden="true"></i> Khuyến nghị đã hoàn thành</span>
+                      <span class="detail-row__value" id="profileRecDone">3/14</span>
+                    </div>
+                  </div>
+
+                  <div class="risk-note" style="margin-top: 12px">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    <span>Đây là hồ sơ demo. Chỉnh sửa sẽ không được lưu lên máy chủ vì Backend chưa được kết nối.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab: security -->
+              <div class="tab-panel" id="tab-security" role="tabpanel">
+                <div class="panel__body">
+                  <div class="detail-row" style="align-items:center">
+                    <div>
+                      <p style="font-weight:600;font-size:.9rem">Xác thực hai yếu tố (2FA)</p>
+                      <p class="text-muted text-sm">Bảo vệ email và tài khoản trường bằng Authenticator/Passkey.</p>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="twoFactorToggle" />
+                      <span class="switch__track" aria-hidden="true"></span>
+                      <span class="sr-only">Bật 2FA</span>
+                    </label>
+                  </div>
+
+                  <div style="margin-top: 20px">
+                    <h3 style="font-size:.9rem;margin-bottom:4px">Đổi mật khẩu</h3>
+                    <p class="text-muted text-sm" style="margin-bottom:12px">Demo giao diện — chưa gửi dữ liệu lên máy chủ.</p>
+                    <div class="form-grid">
+                      <div class="field">
+                        <label class="field__label" for="currentPassword">Mật khẩu hiện tại</label>
+                        <input class="input" id="currentPassword" type="password" placeholder="••••••••" autocomplete="current-password" />
+                      </div>
+                      <div class="field">
+                        <label class="field__label" for="newPassword">Mật khẩu mới</label>
+                        <input class="input" id="newPassword" type="password" placeholder="Tối thiểu 12 ký tự" autocomplete="new-password" />
+                      </div>
+                    </div>
+                    <button class="btn btn-outline" type="button" id="changePasswordBtn">
+                      <i class="bi bi-key" aria-hidden="true"></i> Cập nhật mật khẩu
+                    </button>
+                  </div>
+
+                  <div style="margin-top: 24px">
+                    <h3 style="font-size:.9rem;margin-bottom:10px">Phiên đăng nhập</h3>
+                    <div class="detail-list">
+                      <div class="detail-row">
+                        <span class="detail-row__label"><i class="bi bi-laptop" aria-hidden="true"></i> Windows · Chrome · TP.HCM</span>
+                        <span class="detail-row__value"><span class="badge badge--low">Thiết bị này</span></span>
+                      </div>
+                      <div class="detail-row">
+                        <span class="detail-row__label"><i class="bi bi-phone" aria-hidden="true"></i> iPhone · Safari · TP.HCM</span>
+                        <span class="detail-row__value"><button class="btn btn-sm btn-ghost" type="button" data-revoke-session>Đăng xuất</button></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="alert-strip" style="margin-top: 20px">
+                    <span class="alert-strip__icon"><i class="bi bi-trash3" aria-hidden="true"></i></span>
+                    <div>
+                      <p class="alert-strip__title">Xoá dữ liệu demo</p>
+                      <p class="alert-strip__desc">Đặt lại toàn bộ câu trả lời, báo cáo và trạng thái khuyến nghị trong trình duyệt.</p>
+                      <button class="btn btn-sm btn-danger" type="button" id="clearDemoDataBtn" style="margin-top: 8px">
+                        Xoá dữ liệu trên trình duyệt
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab: settings -->
+              <div class="tab-panel" id="tab-settings" role="tabpanel">
+                <div class="panel__body">
+                  <h3 style="font-size:.9rem;margin-bottom:10px">Giao diện</h3>
+                  <div class="field" style="max-width: 320px">
+                    <label class="field__label" for="themeSelect">Chế độ hiển thị</label>
+                    <select class="input" id="themeSelect">
+                      <option value="light">Sáng</option>
+                      <option value="dark">Tối</option>
+                    </select>
+                  </div>
+
+                  <label class="switch" style="margin: 6px 0 22px">
+                    <input type="checkbox" id="reduceMotionToggle" />
+                    <span class="switch__track" aria-hidden="true"></span>
+                    <span>Giảm chuyển động (Reduce motion)</span>
+                  </label>
+
+                  <h3 style="font-size:.9rem;margin-bottom:10px">Thông báo</h3>
+                  <div class="detail-list">
+                    <div class="detail-row" style="align-items:center">
+                      <div>
+                        <p style="font-weight:600;font-size:.85rem">Nhắc đánh giá định kỳ</p>
+                        <p class="text-muted text-xs">Gợi ý đánh giá lại mỗi 4–6 tuần.</p>
+                      </div>
+                      <label class="switch"><input type="checkbox" id="prefReminder" checked /><span class="switch__track" aria-hidden="true"></span></label>
+                    </div>
+                    <div class="detail-row" style="align-items:center">
+                      <div>
+                        <p style="font-weight:600;font-size:.85rem">Cảnh báo rủi ro nghiêm trọng</p>
+                        <p class="text-muted text-xs">Thông báo ngay khi phát hiện “điểm mù” nguy hiểm.</p>
+                      </div>
+                      <label class="switch"><input type="checkbox" id="prefCritical" checked /><span class="switch__track" aria-hidden="true"></span></label>
+                    </div>
+                    <div class="detail-row" style="align-items:center">
+                      <div>
+                        <p style="font-weight:600;font-size:.85rem">Bản tin bảo mật hàng tháng</p>
+                        <p class="text-muted text-xs">Tổng hợp lừa đảo mới và mẹo phòng tránh.</p>
+                      </div>
+                      <label class="switch"><input type="checkbox" id="prefNewsletter" /><span class="switch__track" aria-hidden="true"></span></label>
+                    </div>
+                  </div>
+
+                  <button class="btn btn-primary" type="button" id="saveSettingsBtn" style="margin-top: 16px">
+                    <i class="bi bi-check2" aria-hidden="true"></i> Lưu tuỳ chọn
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Side -->
+            <aside style="display:flex;flex-direction:column;gap:18px">
+              <section class="panel" data-animate>
+                <div class="panel__head">
+                  <div>
+                    <h2 class="panel__title"><i class="bi bi-activity" aria-hidden="true"></i> Hoạt động gần đây</h2>
+                  </div>
+                </div>
+                <div class="panel__body panel__body--tight" id="activityList"></div>
+              </section>
+
+              <section class="panel" data-animate>
+                <div class="panel__body">
+                  <div style="display:flex;gap:12px;align-items:flex-start">
+                    <span class="stat-icon stat-icon--indigo"><i class="bi bi-shield-lock" aria-hidden="true"></i></span>
+                    <div>
+                      <p style="font-weight:600;font-size:.88rem">Bảo vệ tài khoản trường</p>
+                      <p class="text-muted text-xs" style="margin-top:2px;line-height:1.55">
+                        Email sinh viên là trung tâm khôi phục mọi tài khoản. Hãy bật 2FA và dùng mật khẩu riêng.
+                      </p>
+                      <a class="link-arrow" href="recommendations.html" style="margin-top:8px">Xem khuyến nghị <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+
+  <script src="../js/risk.js?v=20261121"></script>
+  <script src="../js/mock-data.js?v=20261121"></script>
+  <script src="../js/questions.js?v=20261121"></script>
+  <script src="../js/data-service.js?v=20261121"></script>
+  <script src="../js/layout.js?v=20261121"></script>
+  <script src="../js/main.js?v=20261121"></script>
+  <script src="../js/profile.js?v=20261121"></script>
+</body>
+</html>
