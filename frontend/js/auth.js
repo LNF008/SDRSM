@@ -164,19 +164,69 @@ window.SDRSM = window.SDRSM || {};
     }
   }
 
+  const NEXT_KEY = "sdrsm:next";
+
+  function readNext() {
+    const fromUrl = new URLSearchParams(window.location.search).get("next");
+    if (fromUrl) {
+      try {
+        window.sessionStorage.setItem(NEXT_KEY, fromUrl);
+      } catch (error) {
+        /* ignore */
+      }
+      return fromUrl;
+    }
+    try {
+      return window.sessionStorage.getItem(NEXT_KEY);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function clearNext() {
+    try {
+      window.sessionStorage.removeItem(NEXT_KEY);
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
   function afterLoginUrl() {
     const fallback = "pages/dashboard.html";
-    const raw = new URLSearchParams(window.location.search).get("next");
+    const raw = readNext();
     if (!raw) return fallback;
     try {
       const target = new URL(raw, window.location.origin);
       if (target.origin !== window.location.origin) return fallback;
       if (!/\.html$/i.test(target.pathname)) return fallback;
+      clearNext();
       return target.pathname + target.search + target.hash;
     } catch (error) {
+      clearNext();
       return fallback;
     }
   }
+
+  // Keep the redirect URI clean (no query string) so Google accepts it.
+  (function cleanUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has("next")) return;
+    const next = params.get("next");
+    try {
+      window.sessionStorage.setItem(NEXT_KEY, next);
+    } catch (error) {
+      /* ignore */
+    }
+    params.delete("next");
+    const search = params.toString();
+    const url =
+      window.location.pathname + (search ? `?${search}` : "") + window.location.hash;
+    try {
+      window.history.replaceState({}, "", url);
+    } catch (error) {
+      /* ignore */
+    }
+  })();
 
   function completeAuth(payload) {
     ns.session.save(payload);
