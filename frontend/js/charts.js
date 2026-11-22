@@ -111,6 +111,9 @@ window.SDRSM = window.SDRSM || {};
           ],
         },
         options: Object.assign(baseOptions(t), {
+          // No padding: the ring must sit exactly in the middle of the canvas so the
+          // text overlaid in the centre (hero / dashboard / report) lines up with it.
+          layout: { padding: 0 },
           cutout: options.cutout || "78%",
           rotation: -90,
           circumference: 360,

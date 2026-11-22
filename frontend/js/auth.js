@@ -413,7 +413,8 @@ window.SDRSM = window.SDRSM || {};
     if (!slot) return;
 
     slot.innerHTML = "";
-    const width = Math.max(240, Math.min(360, Math.floor(slot.clientWidth || 320)));
+    // Google allows 200–400px; fill the form width as far as it allows.
+    const width = Math.max(200, Math.min(400, Math.floor(slot.clientWidth || 320)));
     window.google.accounts.id.renderButton(slot, {
       type: "standard",
       theme: document.documentElement.dataset.theme === "dark" ? "filled_black" : "outline",

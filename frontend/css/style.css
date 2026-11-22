@@ -1087,9 +1087,16 @@ body.sidebar-open .sidebar-overlay { opacity: 1; visibility: visible; }
 .notif-item__body strong { color: var(--text); font-weight: 600; }
 
 dialog.modal {
+  /* Bootstrap's `.modal` sets `top/left: 0; height: 100%`. For a fixed-position <dialog>,
+     `height: auto` would stretch between top and bottom, so use `fit-content` (height follows
+     the content) and let `margin: auto` centre it in the viewport. */
+  position: fixed;
+  inset: 0;
+  margin: auto;
   width: min(520px, calc(100vw - 32px));
-  height: auto;
+  height: fit-content;
   max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
   overflow: auto;
   padding: 0;
   border: 1px solid var(--border);
@@ -1278,7 +1285,7 @@ dialog.modal[open] { display: block; animation: modalIn 0.22s cubic-bezier(0.2, 
 .hero__panel-head { display: flex; align-items: center; justify-content: space-between; }
 .hero__score { display: flex; align-items: center; gap: 18px; }
 .hero__score-ring { position: relative; width: 128px; height: 128px; flex: 0 0 128px; }
-.hero__score-ring canvas { width: 128px !important; height: 128px !important; }
+.hero__score-ring canvas { display: block; width: 128px !important; height: 128px !important; }
 .hero__score-center {
   position: absolute;
   inset: 0;
@@ -1287,15 +1294,14 @@ dialog.modal[open] { display: block; animation: modalIn 0.22s cubic-bezier(0.2, 
   align-items: center;
   justify-content: center;
   gap: 0.2rem;
-  /* Optical centering: place the number on the ring's true centre and let the
-     label sit just below it, instead of centering the two-line block as a whole. */
-  padding-top: 0.9rem;
+  /* The number + label are centred together as one block, exactly on the ring's centre. */
   text-align: center;
   line-height: 1;
   pointer-events: none;
 }
 .hero__score-center strong { font-size: 1.7rem; display: block; line-height: 1; letter-spacing: -0.03em; }
-.hero__score-center span { font-size: 0.66rem; line-height: 1; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+/* letter-spacing leaves trailing space after the last letter; padding-left balances it. */
+.hero__score-center span { font-size: 0.66rem; line-height: 1; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; padding-left: 0.1em; }
 .hero__pillars { display: flex; flex-direction: column; gap: 10px; }
 .hero__pillar { display: flex; flex-direction: column; gap: 4px; }
 .hero__pillar-top { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-2); }

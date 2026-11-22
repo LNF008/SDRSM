@@ -441,6 +441,15 @@
   display: flex;
   justify-content: center;
   transition: opacity 0.2s ease;
+  /* The Google button lives in an iframe whose document is light-only. In dark mode our page sets
+     `color-scheme: dark`; when the two differ the browser paints an opaque white box behind the
+     iframe. Forcing `light` here makes them match so the iframe stays transparent. */
+  color-scheme: light;
+}
+
+.google-slot iframe {
+  color-scheme: light;
+  max-width: 100%;
 }
 
 .google-slot.is-busy {
