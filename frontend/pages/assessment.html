@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Bài đánh giá rủi ro số SDRSM — 25 câu hỏi thuộc 5 trụ cột an toàn thông tin." />
+  <meta name="theme-color" content="#f3f5fb" />
+  <title>Đánh giá rủi ro · SDRSM</title>
+
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { corePlugins: { preflight: false } };
+  </script>
+
+  <link rel="stylesheet" href="../css/style.css?v=20261126" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=20261126" />
+  <link rel="stylesheet" href="../css/assessment.css?v=20261126" />
+  <link rel="stylesheet" href="../css/responsive.css?v=20261126" />
+
+  <script src="../js/theme.js?v=20261126"></script>
+  <script src="../js/guard.js?v=20261126"></script>
+</head>
+
+<body data-page="assessment">
+  <div class="app">
+    <div id="sidebar-root"></div>
+
+    <div class="app__main">
+      <div id="topbar-root"></div>
+
+      <main class="app__content" id="main-content">
+        <div class="page-width">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow"><i class="bi bi-clipboard-pulse" aria-hidden="true"></i> 25 câu hỏi · 5 trụ cột</p>
+              <h2 class="page-head__title">Đánh giá rủi ro số của bạn</h2>
+              <p class="page-head__desc">
+                Trả lời trung thực để nhận điểm rủi ro sát với thực tế. Bạn có thể quay lại chỉnh sửa trước khi nộp.
+              </p>
+            </div>
+            <div class="page-head__actions">
+              <span class="badge badge--neutral" id="draftBadge">
+                <i class="bi bi-cloud-check" aria-hidden="true"></i> Nháp tự động
+              </span>
+              <button class="btn btn-sm btn-outline" type="button" id="resetDraftBtn">
+                <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Làm lại
+              </button>
+            </div>
+          </div>
+
+          <div class="assess-layout">
+            <div class="assess-main">
+              <nav class="assess-stepper" id="stepList" aria-label="Các nhóm câu hỏi"></nav>
+
+              <section class="pillar-intro" id="pillarIntro" aria-live="polite"></section>
+
+              <div class="question-list" id="questionList"></div>
+
+              <div class="assess-nav">
+                <span class="assess-nav__hint">
+                  <i class="bi bi-info-circle" aria-hidden="true"></i>
+                  <span id="pillarProgressText">0/25 câu đã trả lời</span>
+                </span>
+                <div class="assess-nav__buttons">
+                  <button class="btn btn-outline" type="button" id="prevBtn">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i> Trước
+                  </button>
+                  <button class="btn btn-primary" type="button" id="nextBtn">
+                    Tiếp theo <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="assess-rail" aria-label="Tiến độ và hướng dẫn">
+              <section class="panel progress-card">
+                <div class="panel__head" style="padding: 0 0 4px">
+                  <div>
+                    <h2 class="panel__title" style="font-size: 0.9rem"><i class="bi bi-activity" aria-hidden="true"></i> Tiến độ</h2>
+                  </div>
+                  <span class="badge badge--brand" id="progressBadge">0%</span>
+                </div>
+
+                <div class="progress-ring">
+                  <svg viewBox="0 0 120 120" role="img" aria-label="Vòng tiến độ hoàn thành bài đánh giá">
+                    <defs>
+                      <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#6366f1" />
+                        <stop offset="1" stop-color="#06b6d4" />
+                      </linearGradient>
+                    </defs>
+                    <circle class="progress-ring__track" cx="60" cy="60" r="52" />
+                    <circle class="progress-ring__fill" id="progressRingFill" cx="60" cy="60" r="52" />
+                  </svg>
+                  <div class="progress-ring__center">
+                    <strong id="progressPercent">0%</strong>
+                    <span>Hoàn thành</span>
+                  </div>
+                </div>
+
+                <div class="progress" style="margin-bottom: 14px">
+                  <div class="progress__bar" id="progressBar" style="width: 0%"></div>
+                </div>
+
+                <div class="rail-summary">
+                  <div class="rail-summary__row">
+                    <span><i class="bi bi-check2-square" aria-hidden="true"></i> Đã trả lời</span>
+                    <strong><span id="answeredCount">0</span>/25</strong>
+                  </div>
+                  <div class="rail-summary__row">
+                    <span><i class="bi bi-layers" aria-hidden="true"></i> Trụ cột hiện tại</span>
+                    <strong id="railPillar">1/5</strong>
+                  </div>
+                  <div class="rail-summary__row">
+                    <span><i class="bi bi-clock" aria-hidden="true"></i> Ước tính còn lại</span>
+                    <strong id="railTime">~7 phút</strong>
+                  </div>
+                </div>
+
+                <div class="rail-actions" style="margin-top: 14px">
+                  <button class="btn btn-primary" type="button" id="submitBtn">
+                    <i class="bi bi-send-check" aria-hidden="true"></i> Xem lại &amp; nộp
+                  </button>
+                  <button class="btn btn-ghost btn-sm" type="button" id="saveDraftBtn">
+                    <i class="bi bi-bookmark-plus" aria-hidden="true"></i> Lưu nháp
+                  </button>
+                </div>
+              </section>
+
+              <section class="panel" style="padding: 16px">
+                <h2 class="panel__title" style="font-size: 0.86rem; margin-bottom: 10px">
+                  <i class="bi bi-pentagon" aria-hidden="true"></i> Trọng số 5 trụ cột
+                </h2>
+                <div class="rail-summary" id="weightSummary"></div>
+              </section>
+
+              <section class="panel" style="padding: 16px">
+                <h2 class="panel__title" style="font-size: 0.86rem; margin-bottom: 10px">
+                  <i class="bi bi-info-circle" aria-hidden="true"></i> Cách tính điểm
+                </h2>
+                <div class="rail-legend">
+                  <div class="rail-legend__item"><i class="bi bi-circle-fill" style="color: var(--low)" aria-hidden="true"></i> 0–24: rủi ro thấp</div>
+                  <div class="rail-legend__item"><i class="bi bi-circle-fill" style="color: var(--medium)" aria-hidden="true"></i> 25–49: trung bình</div>
+                  <div class="rail-legend__item"><i class="bi bi-circle-fill" style="color: var(--high)" aria-hidden="true"></i> 50–74: cao</div>
+                  <div class="rail-legend__item"><i class="bi bi-circle-fill" style="color: var(--critical)" aria-hidden="true"></i> 75–100: nghiêm trọng</div>
+                </div>
+                <div class="rail-note" style="margin-top: 12px">
+                  <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                  <span>Lựa chọn tạo “điểm mù” nghiêm trọng sẽ cộng thêm 5–15 điểm rủi ro vào kết quả cuối.</span>
+                </div>
+              </section>
+            </aside>
+          </div>
+
+          <p class="text-muted text-xs" style="margin-top: 18px">
+            Bài đánh giá chỉ phục vụ mục đích học tập. Câu trả lời được lưu tạm trong trình duyệt của bạn.
+          </p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Review dialog -->
+  <dialog class="modal" id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="modal__head">
+      <span class="modal__icon"><i class="bi bi-send-check" aria-hidden="true"></i></span>
+      <div>
+        <h2 id="confirmTitle" style="font-size: 1.02rem">Xác nhận nộp bài đánh giá</h2>
+        <p class="text-muted text-sm">Kiểm tra nhanh các câu còn thiếu trước khi tính điểm.</p>
+      </div>
+      <button class="icon-btn icon-btn--ghost modal__close" type="button" data-dialog-close aria-label="Đóng">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div id="confirmWarning"></div>
+      <div class="review-list" id="reviewList" style="margin-top: 12px"></div>
+    </div>
+    <div class="modal__foot" id="confirmActions">
+      <button class="btn btn-outline" type="button" data-dialog-close>Tiếp tục chỉnh sửa</button>
+      <button class="btn btn-primary" type="button" id="confirmSubmitBtn">
+        <i class="bi bi-shield-check" aria-hidden="true"></i> Nộp &amp; xem báo cáo
+      </button>
+    </div>
+  </dialog>
+
+  <!-- Submitting overlay -->
+  <div class="submit-overlay" id="submitOverlay" hidden>
+    <div class="submit-overlay__card" role="status" aria-live="polite">
+      <div class="submit-overlay__spinner" aria-hidden="true"></div>
+      <h3>Đang tính điểm rủi ro…</h3>
+      <p>Áp dụng trọng số 5 trụ cột và kiểm tra các “điểm mù” nghiêm trọng.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+
+  <script src="../js/config.js?v=20261126"></script>
+  <script src="../js/risk.js?v=20261126"></script>
+  <script src="../js/api.js?v=20261126"></script>
+  <script src="../js/data-service.js?v=20261126"></script>
+  <script src="../js/layout.js?v=20261126"></script>
+  <script src="../js/main.js?v=20261126"></script>
+  <script src="../js/assessment.js?v=20261126"></script>
+</body>
+</html>
