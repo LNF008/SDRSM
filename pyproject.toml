@@ -12,6 +12,7 @@ dependencies = [
     "PyMySQL[rsa]>=1.1",
     "google-auth>=2.35,<3.0",
     "requests>=2.31",
+    "psycopg2-binary>=2.9",
 ]
 
 [tool.vercel]
