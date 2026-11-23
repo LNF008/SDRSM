@@ -95,7 +95,7 @@
         countup: assessment.overallRisk,
         unit: "/100",
         desc: "Điểm rủi ro tổng hợp từ 5 trụ cột",
-        glow: "rgba(99, 102, 241, 0.18)",
+        glow: "rgba(76, 201, 240, 0.18)",
         trend: {
           tone: improved ? "down" : delta > 0 ? "up" : "flat",
           icon: improved ? "bi-arrow-down-right" : delta > 0 ? "bi-arrow-up-right" : "bi-dash",

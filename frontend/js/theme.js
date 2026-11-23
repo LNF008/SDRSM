@@ -22,7 +22,7 @@
   function apply(theme) {
     root.dataset.theme = theme;
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "dark" ? "#070c17" : "#f3f5fb");
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#0b1426" : "#e6f4fa");
     document.dispatchEvent(new CustomEvent("sdrsm:themechange", { detail: { theme } }));
   }
 

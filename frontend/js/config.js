@@ -11,7 +11,11 @@
 
 window.SDRSM = window.SDRSM || {};
 
-window.SDRSM.config = {
-  apiBaseUrl: "https://sdrsm.vercel.app/",
-  googleClientId: "628528126357-9kf79adedttabvlv7irknupk4fdqftar.apps.googleusercontent.com",
-};
+(function () {
+  const host = window.location.hostname;
+  const local = host === "127.0.0.1" || host === "localhost" || host === "";
+  window.SDRSM.config = {
+    apiBaseUrl: local ? "http://127.0.0.1:5000/" : "https://sdrsm.vercel.app/",
+    googleClientId: "628528126357-9kf79adedttabvlv7irknupk4fdqftar.apps.googleusercontent.com",
+  };
+})();

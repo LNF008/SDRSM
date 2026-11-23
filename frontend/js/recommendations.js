@@ -88,7 +88,7 @@
     return `
       <article class="rec-card${rec.done ? " is-done" : ""}" id="rec-${rec.id}">
         <div class="rec-card__top">
-          <span class="rec-card__icon" style="color:${pillar.color || "#6366f1"};background:${pillar.soft || "rgba(99,102,241,.13)"}">
+          <span class="rec-card__icon" style="color:${pillar.color || "#4cc9f0"};background:${pillar.soft || "rgba(76,201,240,.15)"}">
             <i class="bi ${rec.icon}" aria-hidden="true"></i>
           </span>
           <div style="min-width:0">

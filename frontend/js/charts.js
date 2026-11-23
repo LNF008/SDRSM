@@ -21,7 +21,8 @@ window.SDRSM = window.SDRSM || {};
       border: read("--border", "#e4e9f2"),
       surface: read("--surface", "#ffffff"),
       track: read("--track", "#e9eef7"),
-      brand: read("--brand-500", "#6366f1"),
+      brand: read("--brand-500", "#16233d"),
+      chartLine: read("--chart-line", "#6366f1"),
       critical: read("--critical", "#e11d48"),
       high: read("--high", "#f97316"),
       medium: read("--medium", "#f59e0b"),
@@ -98,7 +99,7 @@ window.SDRSM = window.SDRSM || {};
       return {
         type: "doughnut",
         data: {
-          labels: ["Điểm rủi ro", "Phần an toàn"],
+          labels: ["Điểm rủi ro", "Phần còn lại"],
           datasets: [
             {
               data: [value, 100 - value],
@@ -124,7 +125,7 @@ window.SDRSM = window.SDRSM || {};
                 label: (context) =>
                   context.dataIndex === 0
                     ? ` ${context.parsed}/100 điểm rủi ro`
-                    : ` ${context.parsed}/100 điểm an toàn`,
+                    : ` ${context.parsed}/100 còn lại`,
               },
             }),
           },
@@ -257,11 +258,6 @@ window.SDRSM = window.SDRSM || {};
     const labels = options.labels || [];
 
     return mount(canvas, (t) => {
-      const context = canvas.getContext("2d");
-      const gradient = context.createLinearGradient(0, 0, 0, canvas.clientHeight || 280);
-      gradient.addColorStop(0, alpha(t.brand, 0.28));
-      gradient.addColorStop(1, alpha(t.brand, 0));
-
       return {
         type: "line",
         data: {
@@ -270,15 +266,15 @@ window.SDRSM = window.SDRSM || {};
             {
               label: "RiskScore",
               data: values,
-              borderColor: t.brand,
-              backgroundColor: gradient,
+              borderColor: t.chartLine,
+              backgroundColor: alpha(t.chartLine, 0.14),
               borderWidth: 2.5,
               tension: 0.35,
               fill: true,
               pointRadius: 4,
               pointHoverRadius: 7,
               pointBackgroundColor: t.surface,
-              pointBorderColor: t.brand,
+              pointBorderColor: t.chartLine,
               pointBorderWidth: 2.5,
             },
             {

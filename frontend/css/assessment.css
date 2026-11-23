@@ -60,7 +60,7 @@
 
 .step-pill.is-active {
   background: var(--brand-50);
-  border-color: rgba(99, 102, 241, 0.24);
+  border-color: var(--brand-400);
   color: var(--brand-600);
 }
 .step-pill.is-active .step-pill__num { background: var(--brand-500); color: #fff; }
@@ -74,9 +74,7 @@
   padding: 22px 24px;
   border-radius: var(--r-lg);
   border: 1px solid var(--border);
-  background:
-    radial-gradient(420px 200px at 96% 0%, var(--pillar-soft, rgba(99, 102, 241, 0.14)), transparent 62%),
-    var(--surface);
+  background: var(--surface);
 }
 .pillar-intro__top { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 8px; }
 .pillar-intro__icon {
@@ -200,7 +198,7 @@
 }
 .progress-ring__fill {
   fill: none;
-  stroke: url(#progressGradient);
+  stroke: var(--brand-500);
   stroke-width: 10;
   stroke-linecap: round;
   stroke-dasharray: 326.7;
